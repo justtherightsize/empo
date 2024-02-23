@@ -1,3 +1,7 @@
+# detection
+train_adapter_output
+train_output
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
