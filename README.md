@@ -40,6 +40,7 @@ model.set_active_adapters(adapter_name)
 output = model(tokenizer("I wonder why there aren't more people trying to help these people. I understand Haiti is not the richest nor less corrupt country but surely there must be a way to help. Supplies being looted by crowds is understandable because they are hungry and people need food and water to survive. We must think of other ways to distribute the food and water.", return_tensors="pt").input_ids)
 
 print(f"Empathy score predicted by adapter model: {float(output.logits[0][0].detach())}")
+"""Empathy score predicted by adapter model: 5.054476737976074"""
 ```
 
 
