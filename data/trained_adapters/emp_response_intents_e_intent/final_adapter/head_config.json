@@ -1,0 +1,28 @@
+{
+  "config": {
+    "activation_function": "tanh",
+    "bias": true,
+    "dropout_prob": null,
+    "head_type": "classification",
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1,
+      "LABEL_2": 2,
+      "LABEL_3": 3,
+      "LABEL_4": 4,
+      "LABEL_5": 5,
+      "LABEL_6": 6,
+      "LABEL_7": 7,
+      "LABEL_8": 8
+    },
+    "layers": 2,
+    "num_labels": 9,
+    "use_pooler": false
+  },
+  "hidden_size": 768,
+  "model_class": "RobertaAdapterModel",
+  "model_name": "roberta-base",
+  "model_type": "roberta",
+  "name": "emp_response_intents_e_intent",
+  "version": "0.1.0"
+}

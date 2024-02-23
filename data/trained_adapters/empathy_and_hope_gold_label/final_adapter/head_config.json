@@ -1,0 +1,21 @@
+{
+  "config": {
+    "activation_function": "tanh",
+    "bias": true,
+    "dropout_prob": null,
+    "head_type": "classification",
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1
+    },
+    "layers": 2,
+    "num_labels": 2,
+    "use_pooler": false
+  },
+  "hidden_size": 768,
+  "model_class": "RobertaAdapterModel",
+  "model_name": "roberta-base",
+  "model_type": "roberta",
+  "name": "empathy_and_hope_gold_label",
+  "version": "0.1.0"
+}

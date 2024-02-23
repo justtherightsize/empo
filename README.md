@@ -1,7 +1,9 @@
-# empathy-generation
+# Empathy Generation
 
 
-## detection pipeline
+## Detection Pipeline
+
+Pipeline for creating models that we may use as reward functions.
 
 
 ### Environment
@@ -22,7 +24,7 @@ Basic options:
 
     -d, --data_dir DATA_DIR
                     Directory to the dataset where there is a train.csv, test.csv, val.csv
-                    Example: data/empathy-datasets/wassa_essay
+                    Example: data/empathy_datasets/wassa_essay
     
     -tc, --text_column TEXT_COLUMN
                     Name of the text column in the data csvs
@@ -39,7 +41,7 @@ Basic options:
 Example:
 
 ```bash
-python src/train_adapter.py -d data/empathy-datasets/wassa_essay -tc essay -lc empathy -tt regression -dout train_output/train_adapter_output;
+python src/train_adapter.py -d data/empathy_datasets/wassa_essay -tc essay -lc empathy -tt regression -dout train_output/train_adapter_output;
 ```
 
 #### Train setups
@@ -53,7 +55,7 @@ There are two general ways we use this:
 
         Example:
         ```bash
-        python scripts/train_adapter.py -d data/empathy-datasets/wassa_essay -tc essay -lc distress -tt regression -dout train_output/train_adapter_output/wassa_essay_empathy---wassa_essay_distress -lpa -a train_output/train_adapter_output/wassa_essay_distress/final_adapter;
+        python scripts/train_adapter.py -d data/empathy_datasets/wassa_essay -tc essay -lc distress -tt regression -dout train_output/train_adapter_output/wassa_essay_empathy---wassa_essay_distress -lpa -a train_output/train_adapter_output/wassa_essay_distress/final_adapter;
         ```
         
     2. **Adapter from adapter hub**: Use the option `--aux {adapter_path}`. 
@@ -61,7 +63,7 @@ There are two general ways we use this:
 
         Example:
         ```bash
-        python scripts/train_adapter.py -d data/empathy-datasets/wassa_essay -tc essay -lc empathy -tt regression -dout train_output/train_adapter_output/AdapterHub/roberta-base-pf-anli_r3---wassa_essay_empathy -lpa --aux AdapterHub/roberta-base-pf-anli_r3;
+        python scripts/train_adapter.py -d data/empathy_datasets/wassa_essay -tc essay -lc empathy -tt regression -dout train_output/train_adapter_output/AdapterHub/roberta-base-pf-anli_r3---wassa_essay_empathy -lpa --aux AdapterHub/roberta-base-pf-anli_r3;
         ```
 
 
