@@ -1,5 +1,9 @@
 ignore
 
+scripts/**
+src/*.ipynb
+logs/**
+
 # detection
 train_adapter_output
 train_output
