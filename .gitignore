@@ -3,6 +3,7 @@ ignore
 scripts/**
 src/*.ipynb
 logs/**
+results/**
 
 # detection
 train_adapter_output

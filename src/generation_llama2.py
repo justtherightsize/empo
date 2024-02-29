@@ -24,12 +24,16 @@ logging.basicConfig(
 parser = ArgumentParser()
 parser.add_argument("--model_name", dest="model_name", required=True, type=str)
 parser.add_argument("--dataset_path", dest="dataset_path", required=True, type=str)
+parser.add_argument("--input_field_name", dest="input_field_name", required=True, type=str)
+parser.add_argument("--batching", dest="batching", action='store_true', help="Enable or not batching")
+parser.add_argument("--batch_size", dest="batch_size", default=8, type=int)
 
 
 if __name__ == "__main__":
     args = parser.parse_args()
     model_name = args.model_name
     dataset_path = args.dataset_path
+    input_field_name = args.input_field_name
 
     logging.info(f"Using llama model: {model_name}")
     text_generator = pipeline("text-generation", model=model_name, torch_dtype=torch.float16, device_map="auto", return_full_text=False)
@@ -45,7 +49,7 @@ if __name__ == "__main__":
     
 
     for index, row in tqdm(df.iterrows(), desc="Running inference..."):
-        prior_dialog = row["prior_dialog"]
+        prior_dialog = row[input_field_name]
 
         llama_prompt_template = f"""[INST] <<SYS>>
         {system_prompt}
