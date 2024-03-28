@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from typing import Optional
 from accelerate import PartialState
 # settings for telamon
+from src.emp_metrics.ed_load import get_ed
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import torch
@@ -124,15 +126,20 @@ lora_config = LoraConfig(
     lora_dropout=script_args.lora_dropout
 )
 
-train_dataset = convert_to_dataset(pd.read_csv(f"{script_args.dataset_name}/train.csv"))
-val_dataset = convert_to_dataset(pd.read_csv(f"{script_args.dataset_name}/val.csv"))
+# Joan's local dataset-----------------------------------
+# train_dataset = convert_to_dataset(pd.read_csv(f"{script_args.dataset_name}/train.csv"))
+# val_dataset = convert_to_dataset(pd.read_csv(f"{script_args.dataset_name}/val.csv"))
+#
+# if script_args.subset:
+#     train_dataset = train_dataset.select(range(128))
+#     val_dataset = val_dataset.select(range(36))
+#
+# train_dataset = train_dataset.map(lambda x: {"text": format_chat(x["chat"])}).remove_columns("chat")
+# val_dataset = val_dataset.map(lambda x: {"text": format_chat(x["chat"])}).remove_columns("chat")
+# ED from HF --------------------------------------------
+train_dataset = get_ed("train", tokenizer, tokenize=False, add_generation_prompt=False)
+val_dataset = get_ed("validation", tokenizer, tokenize=False, add_generation_prompt=False)
 
-if script_args.subset:
-    train_dataset = train_dataset.select(range(128))
-    val_dataset = val_dataset.select(range(36))
-    
-train_dataset = train_dataset.map(lambda x: {"text": format_chat(x["chat"])}).remove_columns("chat")
-val_dataset = val_dataset.map(lambda x: {"text": format_chat(x["chat"])}).remove_columns("chat")
 
 # print("An example from the dataset")
 # print("#" * 100)
