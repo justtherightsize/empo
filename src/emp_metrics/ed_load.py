@@ -2,7 +2,6 @@ from itertools import chain
 from pathlib import Path
 from typing import Union, Tuple, Any, List, Dict
 
-import pandas
 import pandas as pd
 from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer
@@ -11,16 +10,19 @@ from transformers import AutoTokenizer
 # ED_PTH = 'data/empathy_datasets/empathetic_dialogues'
 # df = pd.read_csv(Path(ED_PTH, 'test.csv'))
 
-def load_preprocess_ed(split: str = "test") -> Tuple[pandas.DataFrame, List[str], List[str]]:
+def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str], List[str]]:
     """
    ED from HuggingFace. Unescapes the commas. Groups the dialogs by keys. Sorts the groups by utterance_idx.
    @param split: one of {train, validation, test}
    @return: the dataframe, keys of dilogs, utterances of dialogs
+   TODO: remove whole dialogs which contain the malformed keyword
    """
     dataset = load_dataset("empathetic_dialogues")
     dataset.set_format("pandas")
 
     test_df = dataset[split][:]
+    keyword = 'hit:'
+    test_df = test_df[~test_df['utterance'].str.contains(keyword)]
     test_df["prompt"] = test_df["prompt"].apply(lambda u: u.replace("_comma_", ","))
     test_df["utterance"] = test_df["utterance"].apply(lambda u: u.replace("_comma_", ","))
 
@@ -76,7 +78,8 @@ def dialog2chat(dialog: List[str], system_message: str = None, user_key: str = "
 
     template = []
     if system_message is not None:
-        template.append({"role": "system", "content": system_message})
+        # template.append({"role": "system", "content": system_message})
+        raise NotImplemented()
     for j in range(len(dialog)):
         template.append(
             {"role": user_key, "content": dialog[j]} if j % 2 == 0 else
@@ -84,26 +87,84 @@ def dialog2chat(dialog: List[str], system_message: str = None, user_key: str = "
     return template
 
 
-def get_dataset(chunks: List[List[Dict[str, str]]], tokenizer, **kwargs) -> Dataset:
-    """
-    Produce a Dataset class off the list of chunks
-    @param chunks: chunks in the chat template https://huggingface.co/docs/transformers/main/en/chat_templating
-    @return: Dataset of chunks
-    """
-    dataset = Dataset.from_dict({"chat": chunks})
-    dataset = dataset.map(lambda x: {
-        "formatted_chat": tokenizer.apply_chat_template(x["chat"], **kwargs)})
-    return dataset
-
-
 def get_ed(split: str, tokenizer, **kwargs) -> Dataset:
-    """Pipeline for getting an ED split in the chat template. Whole dialogs are used.
+    """Pipeline for getting an non-tokenized ED split in the chat template. Whole dialogs are used.
     @param split: one of {train, validation, test}
     @param tokenizer: hf tokenizer
     @return: Dataset in chat template
     """
     _, _, dialogs = load_preprocess_ed(split)
-    return get_dataset([dialog2chat(value) for value in dialogs], tokenizer, **kwargs)
+    dias = [dialog2chat(d) for d in dialogs]
+
+
+    test_tok = [tokenizer.apply_chat_template(x, **kwargs) for x in dias]
+    df_final = pd.DataFrame(test_tok, columns=['chat_templates'])
+
+    dataset = Dataset.from_list(df_final['chat_templates'].apply(
+        lambda x: tokenizer(x, return_length=True)).to_list())
+    return dataset
+
+
+def prep4generation(dialogs, sys_msg=None, user_key: str = "user", assistant_key: str = "assistant"):
+    odd_dias = []
+    gen_targets = []
+    prevs = []
+    system_message = {"role": "system", "content": sys_msg}
+    for d in dialogs:
+        if len(d) % 2 == 0 and d[-1]["role"] == assistant_key:
+            odd_dias.append(d[:-1] if sys_msg is None else [system_message] + d[:-1])
+            gen_targets.append(d[-1]["content"])
+            prevs.append(d[-2]["content"])
+        elif len(d) % 2 == 1 and d[-1]["role"] == user_key and len(d) >= 3:
+            odd_dias.append(d[:-2] if sys_msg is None else [system_message] + d[:-2])
+            gen_targets.append(d[-2]["content"])
+            prevs.append(d[-3]["content"])
+        else:
+            raise ValueError(d)
+    return odd_dias, gen_targets, prevs
+
+
+def get_ed_for_generation(split: str, tokenizer, sys_msg=None, **kwargs) -> pd.DataFrame:
+    """Pipeline for getting an non-tokenized ED split in the chat template for generation.
+    @param split: one of {train, validation, test}
+    @param tokenizer: hf tokenizer
+    @return: Dataset in chat template
+    """
+    _, _, dialogs = load_preprocess_ed(split)
+    dias = [dialog2chat(d) for d in dialogs]
+    odd_dias, gen_targets, prevs = prep4generation(dias, sys_msg)
+
+    test_tok = [tokenizer.apply_chat_template(x, **kwargs) for x in odd_dias]
+    df_final = pd.DataFrame(test_tok, columns=['chat_templates'])
+    df_final['gen_targets'] = gen_targets
+    df_final['prevs'] = prevs
+    return df_final
+
+
+def get_ed_chats(split: str, tokenizer, **kwargs) -> pd.DataFrame:
+    """Pipeline for getting an non-tokenized ED split in the chat template. Whole dialogs are used.
+    @param split: one of {train, validation, test}
+    @param tokenizer: hf tokenizer
+    @return: Dataset in chat template
+    """
+    _, _, dialogs = load_preprocess_ed(split)
+    dias = [dialog2chat(d) for d in dialogs]
+
+    test_tok = [tokenizer.apply_chat_template(x, **kwargs) for x in dias]
+    df_final = pd.DataFrame(test_tok, columns=['chat_templates'])
+    return df_final
+
+
+def get_ed_chat_format(split: str):
+    """Get non-tokenized ED split in chat template as dictionaries. Whole dialogs are used.
+    @param split: one of {train, validation, test}
+    @return: Dataset in chat template
+    """
+    _, _, dialogs = load_preprocess_ed(split)
+    dias = [dialog2chat(d) for d in dialogs]
+    return dias
+
+
 
 
 # Usage
@@ -145,7 +206,8 @@ if __name__ == '__main__':
 
     import matplotlib.pyplot as plt
     import seaborn as sns
-    s = ed_test['formatted_chat'].str.len()
+    ed_df = ed_test.to_pandas()
+    s = ed_df['formatted_chat'].str.len()
     s.describe()
     sns.histplot(s, log_scale=True)
     plt.show()

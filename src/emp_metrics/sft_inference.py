@@ -8,16 +8,11 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import torch
 
-from transformers import AutoTokenizer, HfArgumentParser, AutoModelForCausalLM, BitsAndBytesConfig, TrainingArguments, \
-    AutoConfig
-from datasets import load_dataset
-from peft import LoraConfig, PeftModel
-from trl import SFTTrainer
-import pandas as pd
+from transformers import AutoTokenizer, HfArgumentParser, AutoModelForCausalLM, BitsAndBytesConfig, \
+    TrainingArguments, \
+    AutoConfig, pipeline
 
-from joan_utils import START_OF_TURN, END_OF_TURN, convert_to_dataset, format_chat
-
-
+from peft import prepare_model_for_kbit_training, PeftModel, PeftConfig
 
 @dataclass
 class ScriptArguments:
@@ -91,15 +86,32 @@ class ScriptArguments:
 parser = HfArgumentParser(ScriptArguments)
 script_args = parser.parse_args_into_dataclasses()[0]
 
-# Load the GG model - this is the local one, update it to the one on the Hub
 model_id = script_args.model_name
+output_dir = "./results/zephyr-qlora-empathy3"
+checkpoint_id = "checkpoint-556"
 
-output_dir = "./results/zephyr-qlora-empathy"
-checkpoint_id = "checkpoint-108"
+quantization_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16
+)
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    quantization_config=quantization_config,
+    trust_remote_code=True
+)
+model.config.use_cache = False
+
 tokenizer = AutoTokenizer.from_pretrained(output_dir)
-# tokenizer.pad_token_id = tokenizer.eos_token_id
-# tokenizer.add_special_tokens({'additional_special_tokens': [START_OF_TURN, END_OF_TURN]})
+model.resize_token_embeddings(len(tokenizer))
 
+config = PeftConfig.from_pretrained(output_dir)
+model = PeftModel.from_pretrained(model, output_dir)
+
+# https://discuss.huggingface.co/t/having-trouble-loading-a-fine-tuned-peft-model-codellama-13b-instruct-hf-base/52880
+# https://discuss.huggingface.co/t/peft-model-from-pretrained-load-in-8-4-bit/47199/6
+# model = prepare_model_for_kbit_training(model)
 
 def fix_model_folder_with_incorrect_vocab_size(model_folder: Path, pad_vocab_size_to_multiple_of: int = 64):
     """If you got bitten by the bug https://github.com/huggingface/transformers/issues/25729, and your model got saved with an incorrect vocab size, this will fix it."""
@@ -117,7 +129,18 @@ def fix_model_folder_with_incorrect_vocab_size(model_folder: Path, pad_vocab_siz
         config.save_pretrained(model_folder)
         print(f"Fixed the vocab_size to {config.vocab_size}")
 
+pipe = pipeline("text-generation",
+                model=model,
+                tokenizer=tokenizer,
+                max_new_tokens=200,
+)
 
-# model = AutoModelForCausalLM.from_pretrained(Path(output_dir, checkpoint_id), load_in_4bit=True, device_map="auto")
-model = AutoModelForCausalLM.from_pretrained(output_dir, load_in_4bit=True, device_map="auto")
-# model = PeftModel.from_pretrained(output_dir, checkpoint_id=checkpoint_id, load_in_4bit=True, device_map="auto")
+prompt = """<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where the each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+
+<|user|>
+i'm so excited because i'm finally going to visit my parents next month! I didn't see them for 3 years</s>
+
+<|assistant|>"""
+
+print(pipe(prompt)[0]['generated_text'])

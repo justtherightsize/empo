@@ -3,21 +3,24 @@ from dataclasses import dataclass, field
 from typing import Optional
 from accelerate import PartialState
 # settings for telamon
-from src.emp_metrics.ed_load import get_ed
+from tokenizers import AddedToken
+
+from src.emp_metrics.ed_load import get_ed, get_ed_chats
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import torch
 
-from transformers import AutoTokenizer, HfArgumentParser, AutoModelForCausalLM, BitsAndBytesConfig, TrainingArguments
-from datasets import load_dataset
+from transformers import AutoTokenizer, HfArgumentParser, AutoModelForCausalLM, BitsAndBytesConfig, \
+    TrainingArguments, Trainer
+from datasets import load_dataset, Dataset
 from peft import LoraConfig
-from trl import SFTTrainer
+from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 import pandas as pd
 
 from joan_utils import START_OF_TURN, END_OF_TURN, convert_to_dataset, format_chat
 
-# import wandb
+import wandb
 # wandb.init(mode="disabled")
 
 
@@ -26,7 +29,7 @@ class ScriptArguments:
     """
     These arguments vary depending on how many GPUs you have, what their capacity and features are, and what size model you want to train.
     """
-    per_device_train_batch_size: Optional[int] = field(default=6)
+    per_device_train_batch_size: Optional[int] = field(default=8)
     per_device_eval_batch_size: Optional[int] = field(default=1)
     gradient_accumulation_steps: Optional[int] = field(default=4)
     learning_rate: Optional[float] = field(default=2e-4)
@@ -49,7 +52,7 @@ class ScriptArguments:
         metadata={"help": "The preference dataset to use."},
     )
     subset: Optional[bool] = field(
-        default=True,
+        default=False,
         metadata={"help": "Use subset of data"},
     )
     fp16: Optional[bool] = field(
@@ -61,7 +64,7 @@ class ScriptArguments:
         metadata={"help": "Enables bf16 training."},
     )
     packing: Optional[bool] = field(
-        default=True,
+        default=False,
         metadata={"help": "Use packing dataset creating."},
     )
     gradient_checkpointing: Optional[bool] = field(
@@ -86,7 +89,7 @@ class ScriptArguments:
     save_steps: int = field(default=0.1, metadata={"help": "Save checkpoint every X updates steps."})
     logging_steps: int = field(default=0.1, metadata={"help": "Log every X updates steps."})
     output_dir: str = field(
-        default="./results/zephyr-qlora-empathy2",
+        default="./results/zephyr-qlora-empathy3",
         metadata={"help": "The output directory where the model predictions and checkpoints will be written."},
     )
 
@@ -96,6 +99,42 @@ script_args = parser.parse_args_into_dataclasses()[0]
 # Load the GG model - this is the local one, update it to the one on the Hub
 model_id = script_args.model_name
 
+# setting the tokenizer, as per https://medium.com/@xuebinbin12/fine-tuning-chat-based-llm-with-multi-turn-conversational-data-part-i-d8c64d01a20d
+# Load tokenizer
+tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side="right", padding=True)
+
+# important for Llama, because it doesn't have a padding token
+# tokenizer.pad_token_id = tokenizer.eos_token_id
+
+# even tho zephyr has a pad_token_id = tokenizer.eos_token_id = </s>, we redefine it to [PAD]:
+#   bc eos eos appears in multi places, confusing the model (says https://huggingface.co/docs/trl/en/sft_trainer)
+tokenizer.add_special_tokens({'pad_token': "[PAD]"})
+
+
+# Joan's local dataset-----------------------------------
+# train_dataset = convert_to_dataset(pd.read_csv(f"{script_args.dataset_name}/train.csv"))
+# val_dataset = convert_to_dataset(pd.read_csv(f"{script_args.dataset_name}/val.csv"))
+# train_dataset = train_dataset.map(lambda x: {"text": format_chat(x["chat"])}).remove_columns("chat")
+# val_dataset = val_dataset.map(lambda x: {"text": format_chat(x["chat"])}).remove_columns("chat")
+
+# ED from HF --------------------------------------------
+val_dataset = Dataset.from_pandas(
+    get_ed_chats("validation", tokenizer, tokenize=False, add_generation_prompt=False))
+train_dataset = Dataset.from_pandas(
+    get_ed_chats("train", tokenizer, tokenize=False, add_generation_prompt=False))
+
+if script_args.subset:
+    train_dataset = train_dataset.select(range(256))
+    val_dataset = val_dataset.select(range(48))
+
+# from chat template of zephyr... the \n is a hack from https://huggingface.co/docs/trl/sft_trainer#add-special-tokens-for-chat-format
+response_template = "\n<|assistant|>"
+instruction_template = "\n<|user|>"
+collator = DataCollatorForCompletionOnlyLM(instruction_template=instruction_template,
+                                           response_template=response_template,
+                                           tokenizer=tokenizer,
+                                           mlm=False)
+
 quantization_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_quant_type="nf4",
@@ -104,46 +143,32 @@ quantization_config = BitsAndBytesConfig(
 
 # Load model
 model = AutoModelForCausalLM.from_pretrained(
-    model_id, 
-    quantization_config=quantization_config, 
+    model_id,
+    quantization_config=quantization_config,
     attn_implementation="sdpa" if not script_args.use_flash_attention_2 else "flash_attention_2",
     device_map={"": PartialState().process_index},
-    use_cache=False
+    use_cache=False,
+    # For Trainer----------------------------------
+    # load_in_4bit=True,
+    # bnb_4bit_quant_type="nf4",
+    # bnb_4bit_compute_dtype=torch.bfloat16
 )
+model.resize_token_embeddings(len(tokenizer))
 
-# Load tokenizer
-tokenizer = AutoTokenizer.from_pretrained(model_id)
-tokenizer.pad_token_id = tokenizer.eos_token_id
-# tokenizer.add_special_tokens({'additional_special_tokens': [START_OF_TURN, END_OF_TURN]})
-# model.resize_token_embeddings(len(tokenizer))
-
+# if you add new tokens to vocabulary (e.g. [PAD]), you need to make
+# embeddings + classification head modules trainable by using modules_to_save argument
+# https://www.reddit.com/r/LocalLLaMA/comments/15fhf33/why_does_the_model_refuse_to_predict_eos/
 lora_config = LoraConfig(
     r=script_args.lora_r,
     target_modules=["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"],
     bias="none",
     task_type="CAUSAL_LM",
     lora_alpha=script_args.lora_alpha,
-    lora_dropout=script_args.lora_dropout
+    lora_dropout=script_args.lora_dropout,
+    modules_to_save=["embed_tokens", "lm_head"]
 )
-
-# Joan's local dataset-----------------------------------
-# train_dataset = convert_to_dataset(pd.read_csv(f"{script_args.dataset_name}/train.csv"))
-# val_dataset = convert_to_dataset(pd.read_csv(f"{script_args.dataset_name}/val.csv"))
-#
-# if script_args.subset:
-#     train_dataset = train_dataset.select(range(128))
-#     val_dataset = val_dataset.select(range(36))
-#
-# train_dataset = train_dataset.map(lambda x: {"text": format_chat(x["chat"])}).remove_columns("chat")
-# val_dataset = val_dataset.map(lambda x: {"text": format_chat(x["chat"])}).remove_columns("chat")
-# ED from HF --------------------------------------------
-train_dataset = get_ed("train", tokenizer, tokenize=False, add_generation_prompt=False)
-val_dataset = get_ed("validation", tokenizer, tokenize=False, add_generation_prompt=False)
-
-
-# print("An example from the dataset")
-# print("#" * 100)
-# print(train_dataset["text"][0])
+# For Trainer, not neeeded for SFTTrainer--------------------------
+# model.add_adapter(lora_config, adapter_name="adapter_1")
 
 training_arguments = TrainingArguments(
     output_dir=script_args.output_dir,
@@ -168,7 +193,7 @@ training_arguments = TrainingArguments(
     load_best_model_at_end=True,
     save_total_limit=1
 )
-
+# SFTTrainer can't run with pretokenized data
 trainer = SFTTrainer(
     model=model,
     args=training_arguments,
@@ -176,10 +201,12 @@ trainer = SFTTrainer(
     eval_dataset=val_dataset,
     peft_config=lora_config,
     packing=script_args.packing,
-    dataset_text_field="text",
+    dataset_text_field="chat_templates",
     tokenizer=tokenizer,
     max_seq_length=script_args.max_seq_length,
+    data_collator=collator,
 )
+
 
 train_result = trainer.train()
 # trainer.save_state()

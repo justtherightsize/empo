@@ -243,6 +243,13 @@ def avg_epitome_score(pred_IP_scores, pred_EX_scores, pred_ER_scores, gt_IP_scor
     report['diff_IP'] = AverageMetric(sum(diff_IP_scores), len(diff_IP_scores))
     report['diff_EX'] = AverageMetric(sum(diff_EX_scores), len(diff_EX_scores))
     report['diff_ER'] = AverageMetric(sum(diff_ER_scores), len(diff_ER_scores))
+    return report
+
+
+def to_epi_format(prevs, preds, gts):
+    assert len(prevs) == len(preds) and len(prevs) == len(gts)
+    return [{'utterance': r.lower(), 'prediction': p.lower(), 'gt': g.lower()}
+            for r, p, g in zip(prevs, preds, gts)]
 
 
 def _parse_args():
