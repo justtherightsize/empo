@@ -1,7 +1,9 @@
 import json
 import pprint
 
+import pandas as pd
 import wandb
+from tqdm import tqdm
 
 from src.emp_metrics.diff_epitome import EmpathyScorer, to_epi_format, get_epitome_score, \
     avg_epitome_score
@@ -61,25 +63,15 @@ sys_msg = "You are a friendly assistant, who provides empathetic responses to th
 test_df = get_ed_for_generation("test", inference_tokenizer, sys_msg=sys_msg, tokenize=False,
                                 add_generation_prompt=True)
 
-# if TEST:
-#     test_df = test_df.head(10)
-
 gens = []
-for index, r in test_df.iterrows():
+for index, r in tqdm(test_df.iterrows()):
     gens.append(pipe(r["chat_templates"], return_full_text=False)[0]['generated_text'])
 test_df["gens"] = gens
 
-# Metrics EPITOME, DIFF-EPITOME
-opt = {'no_cuda': False}
-device = 0
-opt['epitome_save_dir'] = "src/emp_metrics/checkpoints/epitome_checkpoint"
-epitome_empathy_scorer = EmpathyScorer(opt, batch_size=1, cuda_device=device)
-epi_in = to_epi_format(test_df["prevs"].to_list(), test_df["gens"].to_list(),
-                       test_df["gen_targets"])
+if TEST:
+    test_df = test_df.head()
 
-_, pred_IP_scores, pred_EX_scores, pred_ER_scores, gt_IP_scores, gt_EX_scores, gt_ER_scores, diff_IP_scores, diff_EX_scores, diff_ER_scores = get_epitome_score(
-    epi_in, epitome_empathy_scorer)
-report = avg_epitome_score(pred_IP_scores, pred_EX_scores, pred_ER_scores, gt_IP_scores, gt_EX_scores, gt_ER_scores, diff_IP_scores, diff_EX_scores, diff_ER_scores)
+assert test_df["gens"].str.contains("~").sum() == 0
+pth = f"results/preds_base_{model_id}.txt" if BASE else f"results/preds_{model_id}.txt"
+test_df.to_csv(pth, sep="~")
 
-with open('results/ED_test_zephyr_base.txt', 'w') as f:
-    f.write(pprint.pformat({k: str(v) for k, v in report.items()}, compact=True).replace("'", '"'))
