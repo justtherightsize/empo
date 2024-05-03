@@ -1,8 +1,9 @@
 from typing import Dict
 
 import numpy as np
+import pandas as pd
 
-from src.emp_metrics.ed_load import load_preprocess_ed
+
 
 
 def get_opposite_emotions(method:str) -> Dict[str, str]:
@@ -59,7 +60,7 @@ def get_opposite_emotions(method:str) -> Dict[str, str]:
                 "guilty": "proud",
                 "surprised": "anticipating",
                 "nostalgic": "hopeful",
-                "confident": "confident",
+                "confident": "embarrassed",
                 "furious": "terrified",
                 "disappointed": "impressed",
                 "caring": "lonely",
@@ -76,9 +77,8 @@ def get_opposite_emotions(method:str) -> Dict[str, str]:
         raise NotImplemented
 
 
-def get_opposite_ed_keys(split:str, emo_method:str="plutchik_1", sampling:str="random") -> dict[
+def get_opposite_ed_keys(df:pd.DataFrame, emo_method:str="plutchik_1", sampling:str="random") -> dict[
     str, str]:
-    df, keys, _ = load_preprocess_ed(split)
 
     # get the keys of opposite dialogs
     oposite_keys = {}
@@ -104,7 +104,3 @@ def get_opposite_ed_keys(split:str, emo_method:str="plutchik_1", sampling:str="r
 
     return oposite_keys
 
-
-if __name__ == '__main__':
-    get_opposite_ed_keys("test")
-    print("Done.")

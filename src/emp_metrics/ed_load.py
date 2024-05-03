@@ -9,6 +9,8 @@ from transformers import AutoTokenizer
 # offline ED
 # ED_PTH = 'data/empathy_datasets/empathetic_dialogues'
 # df = pd.read_csv(Path(ED_PTH, 'test.csv'))
+from src.emp_metrics.emotions import get_opposite_ed_keys
+
 
 def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str], List[str]]:
     """
@@ -30,9 +32,11 @@ def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str], Li
     test_dialogs = []
     test_keys = []
     for name_of_group, contents_of_group in df_group:
+        if len(contents_of_group) < 2:
+            continue
         contents_of_group.sort_values("utterance_idx")
         test_dialogs.append(contents_of_group["utterance"].to_list())
-        test_keys.append(name_of_group)
+        test_keys.append(name_of_group[0])
 
     return test_df, test_keys, test_dialogs
 
@@ -120,7 +124,8 @@ def prep4generation(dialogs, sys_msg=None, user_key: str = "user", assistant_key
             gen_targets.append(d[-2]["content"])
             prevs.append(d[-3]["content"])
         else:
-            raise ValueError(d)
+            print(len(d))
+            # raise ValueError(d)
     return odd_dias, gen_targets, prevs
 
 
@@ -139,6 +144,35 @@ def get_ed_for_generation(split: str, tokenizer, sys_msg=None, **kwargs) -> pd.D
     df_final['gen_targets'] = gen_targets
     df_final['prevs'] = prevs
     return df_final
+
+
+def get_ed_for_dpo(split: str, tokenizer, sys_msg=None, **kwargs) -> Dataset:
+    """Pipeline for getting an non-tokenized ED split in the chat template for dpo.
+    @param split: one of {train, validation, test}
+    @param tokenizer: hf tokenizer
+    @return: Dataset in chat template
+    """
+    df, keys, dialogs = load_preprocess_ed(split)
+    k_dias = {k: dialog2chat(d) for k,d in zip(keys, dialogs)}
+
+    odd_dias, chosen, _ = prep4generation(k_dias.values(), sys_msg)
+    chosen = [[{"role": "assistant", "content": c}] for c in chosen]
+
+    k_msg = {k:c for k,c in zip(keys, chosen)}
+    opposite_keys = get_opposite_ed_keys(df)
+
+    bad = [r for r in opposite_keys.values() if r not in k_msg]
+
+    k_rejected = {k: k_msg[r] for k,r in opposite_keys.items() if r in k_msg}
+
+    assert len(keys) == len(chosen) and len(keys) == len(odd_dias)
+    prefs = [{"prompt": tokenizer.apply_chat_template(p, tokenize=False),
+              "chosen": tokenizer.apply_chat_template(c, tokenize=False),
+              "rejected": tokenizer.apply_chat_template(k_rejected[r], tokenize=False)}
+             for p,c,r in zip(odd_dias, chosen, keys) if r in k_rejected]
+
+    res = Dataset.from_pandas(pd.DataFrame(data=prefs))
+    return res
 
 
 def get_ed_chats(split: str, tokenizer, **kwargs) -> pd.DataFrame:
@@ -163,8 +197,6 @@ def get_ed_chat_format(split: str):
     _, _, dialogs = load_preprocess_ed(split)
     dias = [dialog2chat(d) for d in dialogs]
     return dias
-
-
 
 
 # Usage

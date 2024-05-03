@@ -1,5 +1,3 @@
-import re
-
 import wandb
 TEST = True
 if TEST:
@@ -7,11 +5,12 @@ if TEST:
 
 import os
 
-from accelerate import PartialState
-
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
+
+import re
+from accelerate import PartialState
 import torch
 from transformers import AutoModelForCausalLM, BitsAndBytesConfig, TrainingArguments, pipeline, \
     LlamaTokenizer
@@ -70,8 +69,11 @@ model_id = "alignment-handbook/zephyr-7b-sft-lora"
 output_dir_base = "./results/"
 output_dir = output_dir_base + model_id.split("/")[-1] + str(1 + max(
     [int(match.group()) for d in os.listdir(output_dir_base) if (match := re.search(r'\d+$', d))]))
+print(f"Output dir: {output_dir}")
 
-tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side="right", padding=True, use_fast=False, trust_remote_code=True, clean_up_tokenization_spaces=True)
+# tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side="right", padding=True, use_fast=False,
+#                                           trust_remote_code=True, clean_up_tokenization_spaces=True)
+tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side="right", padding=True)
 tokenizer.add_special_tokens({'pad_token': "[PAD]"})
 
 val_dataset = Dataset.from_pandas(
@@ -80,7 +82,7 @@ train_dataset = Dataset.from_pandas(
     get_ed_chats("train", tokenizer, tokenize=False, add_generation_prompt=False))
 
 if TEST:
-    train_dataset = train_dataset.select(range(256))
+    train_dataset = train_dataset.select(range(2048))
     val_dataset = val_dataset.select(range(48))
 
 response_template = "\n<|assistant|>"
@@ -100,7 +102,7 @@ model = AutoModelForCausalLM.from_pretrained(
     model_id,
     quantization_config=quantization_config,
     attn_implementation= "sdpa",#"flash_attention_2",
-    device_map={"": PartialState().process_index},
+    device_map="auto",#{"": PartialState().process_index},
     use_cache=False)
 model.resize_token_embeddings(len(tokenizer))
 
@@ -116,7 +118,7 @@ lora_config = LoraConfig(
 
 training_arguments = TrainingArguments(
     output_dir=output_dir,
-    per_device_train_batch_size=48,
+    per_device_train_batch_size=32,
     per_device_eval_batch_size=4,
     evaluation_strategy="epoch",
     save_strategy="epoch",
@@ -145,41 +147,42 @@ trainer = SFTTrainer(
     packing=False,
     dataset_text_field="chat_templates",
     tokenizer=tokenizer,
-    max_seq_length=512,
+    max_seq_length=384,
     data_collator=collator,
 )
 
 train_result = trainer.train()
 trainer.save_model(output_dir)
+# model.save_pretrained(output_dir, safe_serialization=False, save_embedding_layers=True)
 del(model)
 del(tokenizer)
 
 # inference ----------------------------------------------
-inference_model = AutoModelForCausalLM.from_pretrained(
-    model_id,
-    quantization_config=quantization_config,
-    trust_remote_code=True
-)
-inference_model.config.use_cache = False
-
-inference_tokenizer = AutoTokenizer.from_pretrained(output_dir)
-inference_model.resize_token_embeddings(len(inference_tokenizer))
-
-config = PeftConfig.from_pretrained(output_dir)
-inference_model = PeftModel.from_pretrained(inference_model, output_dir)
-
-pipe = pipeline("text-generation",
-                model=inference_model,
-                tokenizer=inference_tokenizer,
-                max_new_tokens=200,
-)
-
-prompt = """<|system|>
-You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where the each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
-
-<|user|>
-i'm so excited because i'm finally going to visit my parents next month! I didn't see them for 3 years</s>
-
-<|assistant|>"""
-
-print(pipe(prompt)[0]['generated_text'])
+# inference_model = AutoModelForCausalLM.from_pretrained(
+#     model_id,
+#     quantization_config=quantization_config,
+#     trust_remote_code=True
+# )
+# inference_model.config.use_cache = False
+#
+# inference_tokenizer = AutoTokenizer.from_pretrained(output_dir)
+# inference_model.resize_token_embeddings(len(inference_tokenizer))
+#
+# config = PeftConfig.from_pretrained(output_dir)
+# inference_model = PeftModel.from_pretrained(inference_model, output_dir)
+#
+# pipe = pipeline("text-generation",
+#                 model=inference_model,
+#                 tokenizer=inference_tokenizer,
+#                 max_new_tokens=200,
+# )
+#
+# prompt = """<|system|>
+# You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where the each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+#
+# <|user|>
+# i'm so excited because i'm finally going to visit my parents next month! I didn't see them for 3 years</s>
+#
+# <|assistant|>"""
+#
+# print(pipe(prompt)[0]['generated_text'])
