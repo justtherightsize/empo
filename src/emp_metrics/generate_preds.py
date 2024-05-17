@@ -9,7 +9,7 @@ from src.emp_metrics.diff_epitome import EmpathyScorer, to_epi_format, get_epito
     avg_epitome_score
 from src.emp_metrics.ed_load import get_ed_chats, get_ed_for_generation
 
-TEST = True
+TEST = False
 if TEST:
     wandb.init(mode="disabled")
 

@@ -16,37 +16,43 @@ if TEST:
 import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 from transformers import BlenderbotSmallForConditionalGeneration
 from transformers import AutoTokenizer
 
 mname = "facebook/blenderbot_small-90M"
-model = BlenderbotSmallForConditionalGeneration.from_pretrained(mname)
+model = BlenderbotSmallForConditionalGeneration.from_pretrained(mname).to("cuda")
 tokenizer = AutoTokenizer.from_pretrained(mname)
 
-sys_msg = "You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where the each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt."
+sys_msg = ""
 test_df = get_ed_for_generation("test", tokenizer, sys_msg=sys_msg, tokenize=False,
                                 add_generation_prompt=False)
 
-test_df = test_df.head(2)
+assert test_df["chat_templates"].str.contains("~").sum() == 0
+assert test_df["prevs"].str.contains("~").sum() == 0
 
-inputs = tokenizer(test_df["chat_templates"].to_list(), padding=True, truncation=True, return_tensors="pt")
-reply_ids = model.generate(**inputs)
-print(tokenizer.batch_decode(reply_ids, skip_special_tokens=True))
+gens = []
+inpt = []
+batch_size = 96
+for index, r in test_df.iterrows():
+    if index > 0 and (index % (batch_size - 1) == 0 or index == len(test_df) - 1):
+        inpt.append(r["chat_templates"])
+        inputs = tokenizer(inpt, padding=True, truncation=True,
+                           return_tensors="pt").to("cuda")
+        reply_ids = model.generate(**inputs)
+        gens.extend(tokenizer.batch_decode(reply_ids, skip_special_tokens=True))
+        inpt = []
+    else:
+        inpt.append(r["chat_templates"])
+test_df["gens"] = gens
 
-
-#
-#
-# gens = []
-# for index, r in tqdm(test_df.iterrows()):
-#     gens.append(pipe(r["chat_templates"], return_full_text=False)[0]['generated_text'])
-# test_df["gens"] = gens
 #
 # if TEST:
 #     test_df = test_df.head()
 #
-# assert test_df["gens"].str.contains("~").sum() == 0
-# pth = f"results/preds_base_{model_id}.txt" if BASE else f"results/preds_{model_id}.txt"
-# test_df.to_csv(pth, sep="~")
+assert test_df["gens"].str.contains("~").sum() == 0
+
+pth = f"results/preds_{mname.split('/')[1]}.txt"
+test_df.to_csv(pth, sep="~")
 #
