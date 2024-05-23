@@ -1,0 +1,20 @@
+{
+    "method": "random",
+    "name": "sweep_1",
+    "metric": {
+        "goal": "minimize",
+        "name": "train/loss"
+    },
+    "parameters": {
+        "num_train_epochs": {"values": [1]},
+        "learning_rate": {"values": [2e-4]},
+        "max_grad_norm": {"values": [0.3]},
+        "warmup_ratio": {"values": [0]},
+        "r": {"values": [16]},
+        "target_modules": {"values": [["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"]]},
+        "bias": {"values": ["none"]},
+        "lora_alpha": {"values": [16]},
+        "lora_dropout": {"values": [0.1]},
+        "test_frac": {"values": [0.01]}
+    }
+}
