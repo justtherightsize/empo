@@ -1,3 +1,6 @@
+import time
+import shutil
+import glob
 import os
 import re
 from transformers import AutoModelForCausalLM, BitsAndBytesConfig, TrainingArguments
@@ -47,6 +50,7 @@ def get_ed_chats(split: str, tokenizer, **kwargs) -> pd.DataFrame:
     dias = [dialog2chat(d) for d in dialogs]
 
     test_tok = [tokenizer.apply_chat_template(x, **kwargs) for x in dias]
+    test_tok = [t.replace("<s> <|user|>", "<s>\n<|user|>") for t in test_tok]
     df_final = pd.DataFrame(test_tok, columns=['chat_templates'])
     return df_final
 
@@ -109,11 +113,11 @@ def run_sft():
 
         training_arguments = TrainingArguments(
             output_dir=output_dir,
-            per_device_train_batch_size=12,
-            per_device_eval_batch_size=4,
+            per_device_train_batch_size=config.per_device_train_batch_size,
+            per_device_eval_batch_size=config.per_device_eval_batch_size,
             evaluation_strategy="epoch",
             save_strategy="epoch",
-            gradient_accumulation_steps=4,
+            gradient_accumulation_steps=config.gradient_accumulation_steps,
             optim="paged_adamw_32bit",
             num_train_epochs=config.num_train_epochs,
             logging_steps=0.1,
@@ -138,7 +142,7 @@ def run_sft():
             packing=False,
             dataset_text_field="chat_templates",
             tokenizer=tokenizer,
-            max_seq_length=384,
+            max_seq_length=config.cutoff_len,
             data_collator=collator,
         )
 
@@ -148,4 +152,8 @@ def run_sft():
         del(tokenizer)
         del (train_result)
         del(trainer)
+        checkpt_dirs = glob.glob(output_dir + "/checkpoint-*")
+        for dir_path in checkpt_dirs:
+            shutil.rmtree(dir_path)
+        time.sleep(30)
 
