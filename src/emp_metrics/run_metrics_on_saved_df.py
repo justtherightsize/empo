@@ -58,7 +58,7 @@ def calc_metrics(pth, model_id, metrics: List[str]):
         res["bertscore"] = {"p_bert": str(pbert), "r_bert": str(rbert), "f1_bert": str(f1bert)}
 
     # Write results
-    with open(f'results/multi_test_{model_id}.txt', 'w') as f:
+    with open(f'results/epib_{model_id}.txt', 'w') as f:
         f.write(
             pprint.pformat(res, compact=True).replace("'", '"'))
 
@@ -67,7 +67,7 @@ def main(args: argparse.Namespace) -> None:
     model_id = args.adapter
     output_dir_base = args.base_dir
     metrics = args.metrics
-    pth_to_csv = f"{output_dir_base}/preds_{model_id}.txt"
+    pth_to_csv = f"{output_dir_base}/preds_all_{model_id}.txt"
     calc_metrics(pth_to_csv, model_id, metrics)
 
 
