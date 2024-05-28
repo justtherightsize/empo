@@ -1,21 +1,23 @@
 {
     "method": "grid",
-    "name": "sweep_gemma",
+    "name": "sweep_sft-full",
     "metric": {
         "goal": "minimize",
         "name": "train/loss"
     },
     "parameters": {
+	"model_id": {"values": ["alignment-handbook/zephyr-7b-sft-full"]},
+	"attn_implementation": {"values": ["flash_attention_2"]},
         "num_train_epochs": {"values": [1]},
-        "learning_rate": {"values": [5e-5,1e-5]},
+        "learning_rate": {"values": [1e-5,1e-4]},
         "max_grad_norm": {"values": [0.3]},
         "warmup_ratio": {"values": [0]},
         "r": {"values": [1024]},
         "target_modules": {"values": [["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"]]},
         "bias": {"values": ["none"]},
-        "lora_alpha": {"values": [64,2048]},
+        "lora_alpha": {"values": [1024,2048,256]},
         "lora_dropout": {"values": [0.1]},
-        "test_frac": {"values": [0.5]},
+        "test_frac": {"values": [1.0]},
 	"per_device_train_batch_size": {"values": [64]},
 	"per_device_eval_batch_size": {"values": [16]},
 	"gradient_accumulation_steps": {"values": [1]},

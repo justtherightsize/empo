@@ -60,7 +60,7 @@ def run_sft():
         config = wandb.config
         import torch
 
-        model_id = "alignment-handbook/zephyr-7b-sft-lora"
+        model_id = config.model_id
         output_dir_base = "./results/"
 
         tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side="right", padding=True)
@@ -96,7 +96,7 @@ def run_sft():
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
             quantization_config=quantization_config,
-            attn_implementation= "sdpa",#"flash_attention_2",
+            attn_implementation=config.attn_implementation,
             device_map="auto",
             use_cache=False)
         model.resize_token_embeddings(len(tokenizer))
@@ -120,7 +120,7 @@ def run_sft():
             gradient_accumulation_steps=config.gradient_accumulation_steps,
             optim="paged_adamw_32bit",
             num_train_epochs=config.num_train_epochs,
-            logging_steps=0.1,
+            logging_steps=0.05,
             learning_rate=config.learning_rate,
             max_grad_norm=config.max_grad_norm,
             warmup_ratio=config.warmup_ratio,
