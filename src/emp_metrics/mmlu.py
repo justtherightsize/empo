@@ -110,8 +110,8 @@ def calc_metrics(save_to, output_dir_base, base_model_id, model_id):
         model.resize_token_embeddings(len(tokenizer))
         model.config.use_cache = False
         # config = PeftConfig.from_pretrained(output_dir)
-        # model = PeftModel.from_pretrained(model, output_dir)
-        pipee = pipeline("text-generation", model=model, tokenizer=tokenizer, max_new_tokens=100)
+        model = PeftModel.from_pretrained(model, output_dir)
+        pipee = pipeline("text-generation", model=model, tokenizer=tokenizer, max_new_tokens=50)
         eval_model = Mistral7B(pipe=pipee, tokenizer=tokenizer, sys_msg=sys_msg)
 
     # Define benchmark with specific tasks and shots
