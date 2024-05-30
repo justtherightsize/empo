@@ -148,10 +148,10 @@ def run_sft():
 
         train_result = trainer.train()
         trainer.save_model(output_dir)
-        del(model)
-        del(tokenizer)
-        del (train_result)
-        del(trainer)
+        del model
+        del tokenizer
+        del train_result
+        del trainer
         checkpt_dirs = glob.glob(output_dir + "/checkpoint-*")
         for dir_path in checkpt_dirs:
             shutil.rmtree(dir_path)
