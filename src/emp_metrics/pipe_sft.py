@@ -3,6 +3,7 @@ import shutil
 import glob
 import os
 import re
+import argparse
 from transformers import AutoModelForCausalLM, BitsAndBytesConfig, TrainingArguments
 from peft import LoraConfig
 from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
@@ -11,6 +12,8 @@ from typing import Tuple, List, Dict
 from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer
 import wandb
+from mmlu_all import run_mmlu
+
 
 def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str], List[str]]:
     dataset = load_dataset("empathetic_dialogues")
@@ -63,11 +66,13 @@ def run_sft():
         model_id = config.model_id
         output_dir_base = "./results/"
 
-        tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side="right", padding=True)
+        tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side="right",
+                                                  padding=True)
         tokenizer.add_special_tokens({'pad_token': "[PAD]"})
 
         val_dataset = Dataset.from_pandas(
-            get_ed_chats("validation", tokenizer, tokenize=False, add_generation_prompt=False))
+            get_ed_chats("validation", tokenizer, tokenize=False,
+                         add_generation_prompt=False))
         train_dataset = Dataset.from_pandas(
             get_ed_chats("train", tokenizer, tokenize=False, add_generation_prompt=False))
 
@@ -156,4 +161,31 @@ def run_sft():
         for dir_path in checkpt_dirs:
             shutil.rmtree(dir_path)
         time.sleep(30)
+
+        # run mmlu evaluation and preds generation
+        run_eval(model_id, output_dir, output_dir_base, config.hf_key_path,
+                 True, False)
+
+
+def run_eval(base_model_id: str, adapter_id: str, base_dir, hf_key_path,
+             is_local: bool, is_test=False):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-bm", "--base_model", help="base model name")
+    parser.add_argument("-a", "--adapter", help="adapter name", default="none")
+    parser.add_argument("-d", "--base_dir", default="./results",
+                        help="base dir with saved models")
+    parser.add_argument("-k", "--hf_key_path", help="absolute path")
+    parser.add_argument("-l", "--is_local", default=False, help="gets models from Hub",
+                        action=argparse.BooleanOptionalAction)
+    parser.add_argument("-t", "--is_test", default=False, help="run on low fidelity",
+                        action=argparse.BooleanOptionalAction)
+
+    args = parser.parse_args(["--base_model", base_model_id])
+    args = parser.parse_args(["--adapter", adapter_id])
+    args = parser.parse_args(["--base_dir", "./results"])
+    args = parser.parse_args(["--hf_key_path", hf_key_path])
+    args = parser.parse_args(["--is_local"])
+    args = parser.parse_args(["--no-is_test"])
+
+    run_mmlu(args)
 

@@ -196,7 +196,8 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
     print("Done.")
 
 
-def main(args: argparse.Namespace) -> None:
+def run_mmlu(args: argparse.Namespace) -> None:
+    import ipdb; ipdb.set_trace()
     if args.adapter == "none":
         calc_metrics(f"{args.base_dir}/mmlu_x_all_{args.base_model.split('/')[1]}.txt",
                      args.base_dir, args.base_model, hf_key_path=args.hf_key_path, 
@@ -223,4 +224,4 @@ if __name__ == "__main__":
             action=argparse.BooleanOptionalAction)
     parser.add_argument("-t", "--is_test", default=False, help="run on low fidelity", 
             action=argparse.BooleanOptionalAction)
-    main(parser.parse_args())
+    run_mmlu(parser.parse_args())
