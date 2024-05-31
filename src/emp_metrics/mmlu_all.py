@@ -112,6 +112,7 @@ def get_gen_sys_msg(model_name):
 
 def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
                  hf_key_path=None, is_local=False, is_test=False):
+    import ipdb; ipdb.set_trace()
     login(Path(hf_key_path).read_text().strip())
     # mmlu
     model_dir = "{}/{}".format(output_dir_base, adapter_id)

@@ -77,12 +77,15 @@ def run_sft():
             get_ed_chats("train", tokenizer, tokenize=False, add_generation_prompt=False))
 
         if config.test_frac < 0.9999:
-            train_dataset = train_dataset.select(range(int(len(train_dataset) * config.test_frac)))
-            val_dataset = val_dataset.select(range(int(len(val_dataset) * config.test_frac)))
-
-        output_dir = output_dir_base + model_id.split("/")[-1] + str(1 + max(
-            [int(match.group()) for d in os.listdir(output_dir_base) if
-             (match := re.search(r'\d+$', d))]))
+            train_dataset = train_dataset.select(
+                            range(int(len(train_dataset) * config.test_frac)))
+            val_dataset = val_dataset.select(
+                          range(int(len(val_dataset) * config.test_frac)))
+        
+        prev_ords = [int(match.group()) for d in os.listdir(output_dir_base) if
+                     (match := re.search(r'\d+$', d))]
+        output_dir = output_dir_base + model_id.split("/")[-1] + str(
+                1 + max(prev_ords) if len(prev_ords) > 0 else 0)
         print(f"Output dir: {output_dir}")
 
         response_template = "\n<|assistant|>"
@@ -160,7 +163,7 @@ def run_sft():
         checkpt_dirs = glob.glob(output_dir + "/checkpoint-*")
         for dir_path in checkpt_dirs:
             shutil.rmtree(dir_path)
-        time.sleep(30)
+        time.sleep(5)
 
         # run mmlu evaluation and preds generation
         run_eval(model_id, output_dir, output_dir_base, config.hf_key_path,
@@ -169,23 +172,14 @@ def run_sft():
 
 def run_eval(base_model_id: str, adapter_id: str, base_dir, hf_key_path,
              is_local: bool, is_test=False):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-bm", "--base_model", help="base model name")
-    parser.add_argument("-a", "--adapter", help="adapter name", default="none")
-    parser.add_argument("-d", "--base_dir", default="./results",
-                        help="base dir with saved models")
-    parser.add_argument("-k", "--hf_key_path", help="absolute path")
-    parser.add_argument("-l", "--is_local", default=False, help="gets models from Hub",
-                        action=argparse.BooleanOptionalAction)
-    parser.add_argument("-t", "--is_test", default=False, help="run on low fidelity",
-                        action=argparse.BooleanOptionalAction)
+    args = argparse.Namespace()
 
-    args = parser.parse_args(["--base_model", base_model_id])
-    args = parser.parse_args(["--adapter", adapter_id])
-    args = parser.parse_args(["--base_dir", "./results"])
-    args = parser.parse_args(["--hf_key_path", hf_key_path])
-    args = parser.parse_args(["--is_local"])
-    args = parser.parse_args(["--no-is_test"])
+    args.base_model = base_model_id
+    args.adapter = adapter_id
+    args.base_dir = "./results"
+    args.hf_key_path = hf_key_path
+    args.is_local = True
+    args.is_test = True
 
     run_mmlu(args)
 
