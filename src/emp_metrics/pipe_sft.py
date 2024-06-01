@@ -166,8 +166,8 @@ def run_sft():
         time.sleep(5)
 
         # run mmlu evaluation and preds generation
-        run_eval(model_id, output_dir, output_dir_base, config.hf_key_path,
-                 True, False)
+        run_eval(model_id, output_dir.split("/")[2], output_dir_base,
+                 config.hf_key_path, True, False)
 
 
 def run_eval(base_model_id: str, adapter_id: str, base_dir, hf_key_path,
