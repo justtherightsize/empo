@@ -13,6 +13,7 @@ from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer
 import wandb
 from mmlu_all import run_mmlu
+from src.emp_metrics.run_metrics_on_saved_df import calc_metrics
 
 
 def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str], List[str]]:
@@ -156,6 +157,7 @@ def run_sft():
 
         train_result = trainer.train()
         trainer.save_model(output_dir)
+        print(f"1.-----Saving SFT to: {output_dir}--------")
         del model
         del tokenizer
         del train_result
@@ -163,23 +165,29 @@ def run_sft():
         checkpt_dirs = glob.glob(output_dir + "/checkpoint-*")
         for dir_path in checkpt_dirs:
             shutil.rmtree(dir_path)
-        time.sleep(5)
+        time.sleep(15)
 
         # run mmlu evaluation and preds generation
         run_eval(model_id, output_dir.split("/")[2], output_dir_base,
-                 config.hf_key_path, True, False)
+                 config.hf_key_path, config.is_local, config.is_test, 
+                 config.is_mmlu_subset)
 
 
 def run_eval(base_model_id: str, adapter_id: str, base_dir, hf_key_path,
-             is_local: bool, is_test=False):
+        is_local: bool, is_test:bool=False, is_mmlu_subset:bool=False):
+    # run MMLU, generate preds
     args = argparse.Namespace()
-
     args.base_model = base_model_id
     args.adapter = adapter_id
     args.base_dir = "./results"
     args.hf_key_path = hf_key_path
-    args.is_local = True
-    args.is_test = True
+    args.is_local = is_local
+    args.is_test = is_test
+    args.is_mmlu_subset = is_mmlu_subset
+    # import ipdb; ipdb.set_trace()
+    mmlu_res = run_mmlu(args)  # ~>"path_preds", "path_mmlu"
 
-    run_mmlu(args)
-
+    # run metrics on saved df
+    calc_metrics(mmlu_res["path_preds"],
+                 adapter_id if is_local else base_model_id,
+                 ["bertscore", "epitome"])

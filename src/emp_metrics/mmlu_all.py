@@ -3,6 +3,7 @@
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import re
 import time
+from typing import Dict
 import wandb
 from src.emp_metrics.ed_load import get_ed_for_generation
 wandb.init(mode="disabled")
@@ -111,8 +112,9 @@ def get_gen_sys_msg(model_name):
 
 
 def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
-                 hf_key_path=None, is_local=False, is_test=False):
-    import ipdb; ipdb.set_trace()
+                 hf_key_path=None, is_local=False, is_test=False, 
+                 is_mmlu_subset=False):
+    # import ipdb; ipdb.set_trace()
     login(Path(hf_key_path).read_text().strip())
     # mmlu
     model_dir = "{}/{}".format(output_dir_base, adapter_id)
@@ -148,16 +150,30 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
 
     if is_test:
         benchmark = MMLU(tasks=[MMLUTask.GLOBAL_FACTS], n_shots=5)
+    elif is_mmlu_subset:
+        benchmark = MMLU(tasks=[
+            MMLUTask.GLOBAL_FACTS,
+            MMLUTask.BUSINESS_ETHICS,
+            MMLUTask.COLLEGE_COMPUTER_SCIENCE,
+            MMLUTask.PHILOSOPHY,
+            MMLUTask.LOGICAL_FALLACIES,
+            MMLUTask.INTERNATIONAL_LAW,
+            MMLUTask.MISCELLANEOUS,
+            MMLUTask.MARKETING,
+            MMLUTask.WORLD_RELIGIONS,
+            MMLUTask.MORAL_SCENARIOS,
+            MMLUTask.ASTRONOMY], n_shots=5)
     else:
         benchmark = MMLU(n_shots=5)
     benchmark.evaluate(model=eval_model)
     print(benchmark.overall_score)
+    wandb.log({"mmlu": benchmark.overall_score})
     print("Task-specific Scores: ", benchmark.task_scores)
 
     with open(save_to, 'w') as f:
         f.write(
             f"{benchmark.overall_score}\n\n{benchmark.task_scores}")
-        print(f"MMLU Saved to {save_to}.")
+        print(f"2.-----Saving MMLU to {save_to}.--------")
     sl_time = 3
     print(f"Sleeping for {sl_time}s...")
     time.sleep(sl_time)
@@ -166,10 +182,12 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
     pipe_gen = pipeline("text-generation", model=model, tokenizer=tokenizer,
                         max_new_tokens=200)
     sys_msg = get_gen_sys_msg(base_model_id if adapter_id is None else adapter_id)
-    test_df = get_ed_for_generation("test", tokenizer, sys_msg=sys_msg, tokenize=False,
-                                    add_generation_prompt=True)
+    test_df = get_ed_for_generation("test", tokenizer, sys_msg=sys_msg,
+                                    tokenize=False, add_generation_prompt=True)
     if is_test:
-        test_df = test_df.head(3).copy()
+        test_df = test_df.head(10).copy()
+    elif is_mmlu_subset:
+        test_df = test_df.sample(int(len(test_df)*0.33)).copy()
 
     gens = []
     for index, r in test_df.iterrows():
@@ -177,7 +195,7 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
         assert "~" not in out, f"Char ~ found in gen {index}: {out}"
         gens.append(out)
     test_df["gens"] = gens
-    #import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
     if adapter_id is None:
         sv_nm = base_model_id.split('/')[1]
     else:
@@ -187,7 +205,7 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
             sv_nm = adapter_id.split('/')[1]
     pth = f"{output_dir_base}/preds_x_{sv_nm}.txt"
     test_df.to_csv(pth, sep="~")
-    print(f"Preds saved to {pth}. Freeing memory...")
+    print(f"3.-----Saving preds (SFT) to {pth}.--------")
 
     del tokenizer
     del model
@@ -195,23 +213,27 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
     print(f"Sleeping for {sl_time}s...")
     time.sleep(sl_time)
     print("Done.")
+    return {"path_preds": pth, "path_mmlu": save_to}
 
 
-def run_mmlu(args: argparse.Namespace) -> None:
-    import ipdb; ipdb.set_trace()
+def run_mmlu(args: argparse.Namespace) -> Dict:
+    # import ipdb; ipdb.set_trace()
     if args.adapter == "none":
-        calc_metrics(f"{args.base_dir}/mmlu_x_all_{args.base_model.split('/')[1]}.txt",
-                     args.base_dir, args.base_model, hf_key_path=args.hf_key_path, 
-                     is_local=args.is_local, is_test=args.is_test)
+        ret = calc_metrics(
+                f"{args.base_dir}/mmlu_x_all_{args.base_model.split('/')[1]}.txt",
+                args.base_dir, args.base_model, hf_key_path=args.hf_key_path,
+                is_local=args.is_local, is_test=args.is_test)
     else:
         if args.is_local:
             pth = args.adapter
         else:
             pth = args.adapter.split('/')[1]
-        calc_metrics(f"{args.base_dir}/mmlu_x_{pth}.txt",
-                     args.base_dir, args.base_model, adapter_id=args.adapter, 
-                     hf_key_path=args.hf_key_path, 
-                     is_local=args.is_local, is_test=args.is_test)
+        ret = calc_metrics(f"{args.base_dir}/mmlu_x_{pth}.txt",
+                           args.base_dir, args.base_model, adapter_id=args.adapter,
+                           hf_key_path=args.hf_key_path, is_local=args.is_local,
+                           is_test=args.is_test,
+                           is_mmlu_subset=args.is_mmlu_subset)
+    return ret
 
 
 if __name__ == "__main__":
