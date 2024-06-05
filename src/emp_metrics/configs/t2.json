@@ -1,0 +1,33 @@
+{
+    "method": "grid",
+    "name": "test",
+    "metric": {
+        "goal": "minimize",
+        "name": "train/loss"
+    },
+    "parameters": {
+	"model_id": {"values": ["alignment-handbook/zephyr-7b-sft-full"]},
+	"attn_implementation": {"values": ["flash_attention_2"]},
+        "num_train_epochs": {"values": [1]},
+        "learning_rate": {"values": [1e-5]},
+        "max_grad_norm": {"values": [0.3]},
+        "warmup_ratio": {"values": [0]},
+        "r": {"values": [1028]},
+        "target_modules": {"values": [["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"]]},
+        "bias": {"values": ["none"]},
+        "lora_alpha": {"values": [256]},
+        "lora_dropout": {"values": [0.1]},
+        "test_frac": {"values": [0.001]},
+	"per_device_train_batch_size": {"values": [64]},
+	"per_device_eval_batch_size": {"values": [16]},
+	"gradient_accumulation_steps": {"values": [1]},
+	"cutoff_len": {"values": [256]},
+	"hf_key_path": {"values": ["/home/xsotolar/.huggingface/mistral"]},
+	"is_local": {"values": [true]},
+	"is_test": {"values": [true]},
+	"is_mmlu_subset": {"values": [false]},
+	"dpo": {"values": [true]},
+	"dpo_name": {"values": ["t2"]},
+	"output_dir_base": {"values": ["./results/"]}
+    }
+}

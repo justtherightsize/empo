@@ -111,13 +111,16 @@ def get_gen_sys_msg(model_name):
             "responses that make dialogue flow. Avoid repeating the prompt.".format(l, r)
 
 
-def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
+def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id:str=None,
                  hf_key_path=None, is_local=False, is_test=False, 
-                 is_mmlu_subset=False):
+                 is_mmlu_subset=False, run_pref:str=""):
     # import ipdb; ipdb.set_trace()
     login(Path(hf_key_path).read_text().strip())
     # mmlu
-    model_dir = "{}/{}".format(output_dir_base, adapter_id)
+    # import ipdb; ipdb.set_trace()
+    if output_dir_base in adapter_id:
+        adapter_id = adapter_id.replace(output_dir_base, "")
+    model_dir = "{}/{}".format(output_dir_base.rstrip("/"), adapter_id)
     if is_local:
         tokenizer = AutoTokenizer.from_pretrained(
                 base_model_id if adapter_id is None else model_dir)
@@ -167,7 +170,7 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
         benchmark = MMLU(n_shots=5)
     benchmark.evaluate(model=eval_model)
     print(benchmark.overall_score)
-    wandb.log({"mmlu": benchmark.overall_score})
+    wandb.log({run_pref + "_" + "mmlu": benchmark.overall_score})
     print("Task-specific Scores: ", benchmark.task_scores)
 
     with open(save_to, 'w') as f:
@@ -191,7 +194,9 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
 
     gens = []
     for index, r in test_df.iterrows():
-        out = pipe_gen(r["chat_templates"], return_full_text=False)[0]['generated_text']
+        out = pipe_gen(
+                r["chat_templates"],
+                return_full_text=False)[0]['generated_text']
         assert "~" not in out, f"Char ~ found in gen {index}: {out}"
         gens.append(out)
     test_df["gens"] = gens
@@ -203,7 +208,7 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id=None,
             sv_nm = adapter_id
         else:
             sv_nm = adapter_id.split('/')[1]
-    pth = f"{output_dir_base}/preds_x_{sv_nm}.txt"
+    pth = f"{output_dir_base.rstrip('/')}/preds_x_{sv_nm}.txt"
     test_df.to_csv(pth, sep="~")
     print(f"3.-----Saving preds (SFT) to {pth}.--------")
 
@@ -222,17 +227,20 @@ def run_mmlu(args: argparse.Namespace) -> Dict:
         ret = calc_metrics(
                 f"{args.base_dir}/mmlu_x_all_{args.base_model.split('/')[1]}.txt",
                 args.base_dir, args.base_model, hf_key_path=args.hf_key_path,
-                is_local=args.is_local, is_test=args.is_test)
+                is_local=args.is_local, is_test=args.is_test, 
+                run_pref=args.run_pref)
     else:
         if args.is_local:
             pth = args.adapter
         else:
             pth = args.adapter.split('/')[1]
-        ret = calc_metrics(f"{args.base_dir}/mmlu_x_{pth}.txt",
-                           args.base_dir, args.base_model, adapter_id=args.adapter,
-                           hf_key_path=args.hf_key_path, is_local=args.is_local,
-                           is_test=args.is_test,
-                           is_mmlu_subset=args.is_mmlu_subset)
+        ret = calc_metrics(
+                f"{args.base_dir}/mmlu_x_{pth.replace(args.base_dir, '')}.txt",
+                args.base_dir, args.base_model, adapter_id=args.adapter,
+                hf_key_path=args.hf_key_path, is_local=args.is_local,
+                is_test=args.is_test,
+                is_mmlu_subset=args.is_mmlu_subset,
+                run_pref=args.run_pref)
     return ret
 
 

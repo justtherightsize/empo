@@ -14,7 +14,7 @@ import pandas as pd
 np.seterr(all='raise')
 
 
-def calc_metrics(pth, model_id, metrics: List[str]):
+def calc_metrics(pth, model_id, metrics: List[str], run_pref: str = ""):
     test_df = pd.read_csv(pth, sep="~")
     test_df = test_df[test_df['gens'].str.len() != 0]
     res = {}
@@ -41,9 +41,9 @@ def calc_metrics(pth, model_id, metrics: List[str]):
                 gt_EX_scores, gt_ER_scores, diff_IP_scores, diff_EX_scores,
                 diff_ER_scores)
         res["epitome"] = {k: str(v) for k, v in epitome_report.items()}
-        wandb.log({"diff_er": res["epitome"]["diff_ER"]})
-        wandb.log({"diff_ex": res["epitome"]["diff_EX"]})
-        wandb.log({"diff_ip": res["epitome"]["diff_IP"]})
+        wandb.log({run_pref + "_" + "diff_er": res["epitome"]["diff_ER"]})
+        wandb.log({run_pref + "_" + "diff_ex": res["epitome"]["diff_EX"]})
+        wandb.log({run_pref + "_" + "diff_ip": res["epitome"]["diff_IP"]})
         del epitome_empathy_scorer
 
     if "bertscore" in metrics:
@@ -58,13 +58,15 @@ def calc_metrics(pth, model_id, metrics: List[str]):
         pbert = np.mean(bs_results["precision"])
         rbert = np.mean(bs_results["recall"])
         f1bert = np.mean(bs_results["f1"])
-        wandb.log({"bertf1": f1bert})
+        wandb.log({run_pref + "_" + "bertf1": f1bert})
 
         res["bertscore"] = {"p_bert": str(pbert), "r_bert": str(rbert),
                             "f1_bert": str(f1bert)}
 
     # Write results
-    bert_pth = "results/epib_{}.txt".format(model_id)
+    bert_pth = "{}/epib_{}.txt".format(
+            wandb.config.output_dir_base.rstrip("/"),
+            model_id.replace(wandb.config.output_dir_base, ""))
     with open(bert_pth, 'w') as f:
         f.write(
             pprint.pformat(res, compact=True).replace("'", '"'))

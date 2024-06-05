@@ -13,6 +13,7 @@ from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer
 import wandb
 from mmlu_all import run_mmlu
+from src.emp_metrics.dpo_ps import train_dpo
 from src.emp_metrics.run_metrics_on_saved_df import calc_metrics
 
 
@@ -65,7 +66,7 @@ def run_sft():
         import torch
 
         model_id = config.model_id
-        output_dir_base = "./results/"
+        output_dir_base = config.output_dir_base
 
         tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side="right",
                                                   padding=True)
@@ -168,26 +169,38 @@ def run_sft():
         time.sleep(15)
 
         # run mmlu evaluation and preds generation
-        run_eval(model_id, output_dir.split("/")[2], output_dir_base,
-                 config.hf_key_path, config.is_local, config.is_test, 
-                 config.is_mmlu_subset)
+        args = argparse.Namespace()          
+        args.base_model = model_id
+        args.adapter = output_dir.split("/")[2]
+        args.base_dir = output_dir_base
+        args.hf_key_path = config.hf_key_path
+        args.is_local = config.is_local
+        args.is_test = config.is_test
+        args.is_mmlu_subset = config.is_mmlu_subset
+        run_eval(args, "sft")
+
+        if config.dpo:
+            args.dpo_name = config.dpo_name
+            dpo_out_dir = run_dpo(args)
+            args.adapter = dpo_out_dir
+            # import ipdb; ipdb.set_trace()
+            run_eval(args, "dpo")
 
 
-def run_eval(base_model_id: str, adapter_id: str, base_dir, hf_key_path,
-        is_local: bool, is_test:bool=False, is_mmlu_subset:bool=False):
-    # run MMLU, generate preds
-    args = argparse.Namespace()
-    args.base_model = base_model_id
-    args.adapter = adapter_id
-    args.base_dir = "./results"
-    args.hf_key_path = hf_key_path
-    args.is_local = is_local
-    args.is_test = is_test
-    args.is_mmlu_subset = is_mmlu_subset
+def run_eval(args: argparse.Namespace, run_prefix: str = "") -> None:
     # import ipdb; ipdb.set_trace()
+    args.run_pref = run_prefix
     mmlu_res = run_mmlu(args)  # ~>"path_preds", "path_mmlu"
 
     # run metrics on saved df
     calc_metrics(mmlu_res["path_preds"],
-                 adapter_id if is_local else base_model_id,
-                 ["bertscore", "epitome"])
+                 args.adapter if args.is_local else args.base_model,
+                 ["bertscore", "epitome"], run_prefix)
+
+
+def run_dpo(args: argparse.Namespace) -> str:
+    dpo_out_dir = train_dpo(args.base_model, args.adapter, args.base_dir,
+                            args.dpo_name)
+    return dpo_out_dir
+
+

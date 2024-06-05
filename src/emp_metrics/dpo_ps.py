@@ -1,24 +1,12 @@
 import argparse
-import os
-
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-
 import torch
 import wandb
-TEST = False
-if TEST:
-    wandb.init(mode="disabled")
-
 from peft import LoraConfig, PeftModel
 from alignment import DPOConfig
 from trl import DPOTrainer
 from src.emp_metrics.ed_load import get_ed_for_dpo
-
 from huggingface_hub import login
 from pathlib import Path
-login(Path('/home/xshared/.huggingface/mistral').read_text().strip())
-
 from transformers import AutoTokenizer, BitsAndBytesConfig, AutoModelForCausalLM
 from numpy import percentile
 
@@ -26,7 +14,9 @@ from numpy import percentile
 def train_dpo(base_model_id, model_id, output_dir_base, new_name):
     output_dir = output_dir_base + model_id
     dpo_output_dir = output_dir_base + model_id + "_" + new_name
+    config = wandb.config
 
+    # import ipdb; ipdb.set_trace()
     tokenizer = AutoTokenizer.from_pretrained(output_dir)
 
     # load datasets
@@ -35,16 +25,23 @@ def train_dpo(base_model_id, model_id, output_dir_base, new_name):
               "with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give " \
               "responses that make dialogue flow. Avoid repeating the prompt."
 
-    train_dataset = get_ed_for_dpo("train", tokenizer, sys_msg=sys_msg, tokenize=False,
-                                    add_generation_prompt=True)
-    eval_dataset = get_ed_for_dpo("test", tokenizer, sys_msg=sys_msg, tokenize=False,
-                                    add_generation_prompt=True)
+    train_dataset = get_ed_for_dpo("train", tokenizer, sys_msg=sys_msg,
+                                   tokenize=False, add_generation_prompt=True)
+    eval_dataset = get_ed_for_dpo("test", tokenizer, sys_msg=sys_msg,
+                                  tokenize=False, add_generation_prompt=True)
 
     # find the p95 length of the prompt
-    prompt_length = int(percentile([len(tokenizer(x)["input_ids"]) for x in train_dataset["prompt"]], 95))
+    prompt_length = int(percentile(
+        [len(tokenizer(x)["input_ids"]) for x in train_dataset["prompt"]], 95))
     max_seq_length_chosen = int(percentile([len(tokenizer(x["prompt"] + x["chosen"])["input_ids"]) for x in train_dataset], 95))
     max_seq_length_rejected = int(percentile([len(tokenizer(x["prompt"] + x["rejected"])["input_ids"]) for x in train_dataset], 95))
     max_seq_length = max(max_seq_length_chosen, max_seq_length_rejected)
+
+    if config.test_frac < 0.9999:
+        train_dataset = train_dataset.select(
+                        range(int(len(train_dataset) * config.test_frac)))
+        eval_dataset = eval_dataset.select(
+                      range(int(len(eval_dataset) * config.test_frac)))
 
     # filter datasets to remove samples that are too long
     train_dataset = train_dataset.filter(lambda x: len(tokenizer(x["prompt"] + x["chosen"])["input_ids"]) <= max_seq_length)
@@ -65,7 +62,6 @@ def train_dpo(base_model_id, model_id, output_dir_base, new_name):
 
     model = AutoModelForCausalLM.from_pretrained(
         base_model_id,
-        # load_in_4bit=True,
         quantization_config=bnb_config,
         attn_implementation="flash_attention_2",
         torch_dtype=torch.bfloat16,
@@ -75,7 +71,8 @@ def train_dpo(base_model_id, model_id, output_dir_base, new_name):
     model.resize_token_embeddings(len(tokenizer))
     model = PeftModel.from_pretrained(model, output_dir, is_trainable=True)
 
-    # Load the adapter a second time, with a different name, which will be our reference model.
+    # Load the adapter a second time, with a different name, which will be 
+    # our reference model.
     #   -> doesnt work, load the model twice
     # model.load_adapter(output_dir, adapter_name="reference")
 
@@ -92,31 +89,30 @@ def train_dpo(base_model_id, model_id, output_dir_base, new_name):
     ref_model = PeftModel.from_pretrained(ref_model, output_dir, is_trainable=True)
 
     training_args = DPOConfig(
-        output_dir=dpo_output_dir,               # directory to save and repository id
-        num_train_epochs=1,                     # number of training epochs
-        per_device_train_batch_size=8,         # batch size per device during training
-        per_device_eval_batch_size=4,           # batch size for evaluation
-        gradient_accumulation_steps=1,          # number of steps before performing a backward/update pass
-        gradient_checkpointing=True,            # use gradient checkpointing to save memory
-        optim="adamw_torch_fused",              # use fused adamw optimizer
-        learning_rate=5e-5,                     # 10x higher LR than QLoRA paper
-        max_grad_norm=0.3,                      # max gradient norm based on QLoRA paper
-        warmup_ratio=0.1,                       # warmup ratio based on QLoRA paper
-        lr_scheduler_type="cosine",             # use cosine learning rate scheduler
-        logging_steps=25,                       # log every 25 steps
-        save_steps=500,                         # when to save checkpoint
-        save_total_limit=2,                     # limit the total amount of checkpoints
-        evaluation_strategy="steps",            # evaluate every 1000 steps
-        eval_steps=700,                         # when to evaluate
-        bf16=True,                              # use bfloat16 precision
-        tf32=True,                              # use tf32 precision
-        push_to_hub=False,                      # push model to hub
-        report_to="wandb",                # report metrics to tensorboard
+        output_dir=dpo_output_dir,
+        num_train_epochs=1,
+        per_device_train_batch_size=8,
+        per_device_eval_batch_size=4,
+        gradient_accumulation_steps=1,
+        gradient_checkpointing=True,
+        optim="adamw_torch_fused",
+        learning_rate=5e-5,
+        max_grad_norm=0.3,
+        warmup_ratio=0.1,
+        lr_scheduler_type="cosine",
+        logging_steps=25,
+        save_steps=500,
+        save_total_limit=2,
+        evaluation_strategy="steps",
+        eval_steps=700,
+        bf16=True,
+        tf32=True,
+        push_to_hub=False,
+        report_to="wandb"
     )
-
     dpo_args = {
-        "beta": 0.1,                            # The beta factor in DPO loss. Higher beta means less divergence
-        "loss_type": "sigmoid"                  # The loss type for DPO.
+        "beta": 0.1,  # Higher beta means less divergence
+        "loss_type": "sigmoid"
     }
     trainer = DPOTrainer(
                 model,
@@ -137,19 +133,20 @@ def train_dpo(base_model_id, model_id, output_dir_base, new_name):
 
     trainer.train()
     trainer.save_model(dpo_output_dir)
-
-
-def main(args: argparse.Namespace) -> None:
-    train_dpo(args.base_model, args.adapter, args.base_dir, args.new_name)
+    print(f"5.-----Saving DPO to: {dpo_output_dir}--------")
+    return dpo_output_dir
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-g", "--gpu", default="1", help="not implemented")
-    parser.add_argument("-bm", "--base_model", default="alignment-handbook/zephyr-7b-sft-lora",
+    parser.add_argument("-bm", "--base_model",
+                        default="alignment-handbook/zephyr-7b-sft-lora",
                         help="base model name")
     parser.add_argument("-a", "--adapter", help="adapter name")
-    parser.add_argument("-d", "--base_dir", default="./results/", help="base dir with saved models")
+    parser.add_argument("-d", "--base_dir", default="./results/",
+                        help="base dir with saved models")
     parser.add_argument("-n", "--new_name", help="save name")
 
-    main(parser.parse_args())
+    ARGS = parser.parse_args()
+    train_dpo(ARGS.base_model, ARGS.adapter, ARGS.base_dir, ARGS.new_name)
