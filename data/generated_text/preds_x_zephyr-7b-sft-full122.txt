@@ -1,0 +1,251 @@
+~chat_templates~gen_targets~prevs~gens
+1525~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I left the front door unlocked and the mailman robbed me. I couldn't believe I would do that.</s>
+<|assistant|>
+oh no, I hope you did any sustain any injury</s>
+<|user|>
+Only my pride! I wasn't at home when he robbed me. He took a lot of valuables. </s>
+<|assistant|>
+"~Yea, he will definitely get caught~Only my pride! I wasn't at home when he robbed me. He took a lot of valuables. ~I hope you can get them back
+670~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I think being with my husband makes me a better person</s>
+<|assistant|>
+That is good. Do you have strong feeling for each other?</s>
+<|user|>
+Definetly, he's my best friend forever.</s>
+<|assistant|>
+"~That is cute~Definetly, he's my best friend forever.~That is great. I hope you guys will be together forever.
+2251~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+When I interviewed for the job I have now, they didn't give me a solid answer for like a month after the interview.</s>
+<|assistant|>
+That's a long time to kind of hang in limbo. I am sorry you had to endure that for a month.</s>
+<|user|>
+It worked out ok, but I had to keep bugging them to make sure they hadn't given up on me.</s>
+<|assistant|>
+"~Well, at least that story had a happy ending. It could have went much worse.~It worked out ok, but I had to keep bugging them to make sure they hadn't given up on me.~That's good that it worked out. I am glad you were able to get the job.
+858~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I was sitting on my back deck drinking a cup of coffee and just felt so wholesome and happy with life. It was great . You ever have any of those moments?</s>
+<|assistant|>
+I certainly do.  Lucky to be healthy and able</s>
+<|user|>
+I always try to look for the small things. I got to see a hummingbird today and that was great. Anything small in your life make a big impact?</s>
+<|assistant|>
+"~Good question.  I am thankful to be able to park my car in my garage!~I always try to look for the small things. I got to see a hummingbird today and that was great. Anything small in your life make a big impact?~Yes, I love to see the little things.  I love to see the sunrise and sunset.  I love to see the birds.  I love to see the flowers.  I love to see the trees.  I love to see the people.  I love to see the world.
+2264~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+So about a year ago now, my girlfriend decided to surprise me with a puppy!</s>
+<|assistant|>
+Oh wow, puppies are nice.  What kind of puppy did you get?</s>
+<|user|>
+Yes, so nice!! It was the best thing that could've happened! It's a German Shepherd! </s>
+<|assistant|>
+"~Thats a nice breed of dog.  I just went on a camping trip with a relative who has one, they are very loyal and smart of course.  Was he/she your first pet?~Yes, so nice!! It was the best thing that could've happened! It's a German Shepherd! ~That's awesome!  I love German Shepherds.  They are so smart and loyal.
+1976~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I won a lottery for a small amount of money.</s>
+<|assistant|>
+Awesome, are you a millionaire now?</s>
+<|user|>
+No, I wish. It was only a few hundred dollars.</s>
+<|assistant|>
+"~At least you won something though. I've never won anything from the lottery.~No, I wish. It was only a few hundred dollars.~That's still a lot of money, you can buy a lot of things with that.
+1528~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I feel pretty hopeful towards this woman that I really enjoy. I am trying to date her.</s>
+<|assistant|>
+Do you have a good chance with her. Have you talked to her about it?</s>
+<|user|>
+I think she has expressed interest in me in the past, but she recently moved, but she is not too far away. I might ask her on a date the next time I am around.</s>
+<|assistant|>
+"~That will be better. Talk to her before you lose her~I think she has expressed interest in me in the past, but she recently moved, but she is not too far away. I might ask her on a date the next time I am around.~That sounds like a good plan. I hope it works out for you.
+636~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I remember when I was a young one. I loved life.</s>
+<|assistant|>
+Life was easier back then, Hopefully you still love life?</s>
+<|user|>
+I do, but maybe not with he same flare as before</s>
+<|assistant|>
+"~Nostalgia can stir emotions. You'll find something to love about life again.~I do, but maybe not with he same flare as before~I understand, Life can be hard sometimes.
+1995~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I get paid today and I'm getting this new game I've been waiting on to be released!</s>
+<|assistant|>
+I get paid today as well! What game are you thinking about getting?</s>
+<|user|>
+I'm thinking about getting FarCry 5. I pre-order for the early release! I'm really excited about it.</s>
+<|assistant|>
+"~Didn't that game come out a few months ago? I got it shortly after I released and I wasn't very impressed. It wasn't a bad game, but it certainly was not the best game.~I'm thinking about getting FarCry 5. I pre-order for the early release! I'm really excited about it.~I've heard good things about it. I'm thinking about getting it as well.
+449~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+My wife has had a trip in mind ever since I've known her. She recently had a big birthday so I surprised her with the trip. We went and she loved it. It made me happy to see her so happy.</s>
+<|assistant|>
+That's wonderful! Where are you guys going to go?</s>
+<|user|>
+It was just a trip to the west coast. There was a handful of things she's always wanted to see/do. So we did all of them.</s>
+<|assistant|>
+"~I'm glad you guys had a good time. Are you planning another trip?~It was just a trip to the west coast. There was a handful of things she's always wanted to see/do. So we did all of them.~That's great! I'm sure she'll have a great time.
+1205~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I love what I do because it's about both inspiring and empowering people to be their best and to excel at their jobs.</s>
+<|assistant|>
+It's awesome to have a job where you feel rewarded through what you do. What do you do?</s>
+<|user|>
+I work as a facilitator and team trainer -- mostly with a company who I truly love and respect for walking their talk.</s>
+<|assistant|>
+"~That sounds like a lot of fun, it's so rewarding to have a position where you can engage with other people. You really seem motivating and inspiring, so I'm happy you have that job!~I work as a facilitator and team trainer -- mostly with a company who I truly love and respect for walking their talk.~That's great. I'm sure you're doing a great job.
+2362~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I'm taking my midterm exam this week, and I really want to do well on it. I've studied a lot, and taken the practice test 5 times. I'm still pretty anxious though!</s>
+<|assistant|>
+Nice, I guess the only times I was nervous to take a test was when I wasn't prepared, but there's only so much preparation you can do until you just have to trust your brain or whatever</s>
+<|user|>
+That's true. I probably have it down pat at this point. It's just it's my first graduate course, and I want to ace my entire graduate degree with a 4.0 GPA. This is my first major major grade.</s>
+<|assistant|>
+"~Wow! You must have like every technique in your toolbox to go for that goal~That's true. I probably have it down pat at this point. It's just it's my first graduate course, and I want to ace my entire graduate degree with a 4.0 GPA. This is my first major major grade.~I'm sure you'll do great, I'm sure you've prepared well and you'll do great
+1565~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I was in a college class once with an older woman.  She took a paper idea I had talked about and presented it as her own, stealing all the work I had done.</s>
+<|assistant|>
+That is despicable. Did you report her to the teacher?</s>
+<|user|>
+I did.  There wasn't much she could do, but at least I could still do the same paper without having to redo a bunch of work.</s>
+<|assistant|>
+"~She could drop her from the class and give her an F!~I did.  There wasn't much she could do, but at least I could still do the same paper without having to redo a bunch of work.~That is good. I hope you got an A on it.
+2086~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I remember being on holiday and trying to find a way to watch an F1 race. I caught the beginning of the race in a bar before it closed and saw that my favourite driver had had a puncture and fallen to last place. My mate asked me what the chances were of him winning from that position? I said 1000 to 1. By the time we were back at the hostel, I learned that he had indeed won the race in what many believe was the greatest single event in the sport's history!</s>
+<|assistant|>
+Wow! That is insane, too bad you didn't bet with those kind of odds.</s>
+<|user|>
+Yeah, for sure! It was one of those nights where we were journey is what's fun rather than what you were aiming to do, if you get me. We went from sports bar to sports bar trying to see who would show the event and by the time we gave up we'd had such a funny night and the race had turned out great!</s>
+<|assistant|>
+"~That sounds like a great time, one of those nights you always remember!~Yeah, for sure! It was one of those nights where we were journey is what's fun rather than what you were aiming to do, if you get me. We went from sports bar to sports bar trying to see who would show the event and by the time we gave up we'd had such a funny night and the race had turned out great!~That sounds like a great night.
+1974~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I was sucker punched when I was 17. The guy broke his hand and fled the scene. I saw him one time after this riding a bicycle but didn't do anything.</s>
+<|assistant|>
+Lols why didn't you do anything </s>
+<|user|>
+I wasn't confident. Now I regret not punishing him. </s>
+<|assistant|>
+"~Awww but it's still good that you didn't push him, Cox it might lead to something else ~I wasn't confident. Now I regret not punishing him. ~I would have done the same thing
+2112~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I got to hear a lot of cool songs on a radio station I usually don't listen to.</s>
+<|assistant|>
+Nice! Which ones did you hear!</s>
+<|user|>
+Mambo #5, Missy Elliot, and Ricky Martin. It really took me back</s>
+<|assistant|>
+"~That one is a zinger! I remember listening to that when I took my grandma to prom!~Mambo #5, Missy Elliot, and Ricky Martin. It really took me back~Those are some great songs! I love Mambo #5!
+75~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+Skydiving taught me how to let go and stop trying to fix everything</s>
+<|assistant|>
+Wow. That's amazing. Were you afraid to try it?</s>
+<|user|>
+Yeah the hardest part for me was just realizing that I wouldn't be in control, but it was very natural in the end</s>
+<|assistant|>
+"~Do you often feel like you want to be in control? Cause i totally do.~Yeah the hardest part for me was just realizing that I wouldn't be in control, but it was very natural in the end~That's great. I'm glad you had a good experience.
+1461~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+My husband shocked me the other day </s>
+<|assistant|>
+Why did he do that?</s>
+<|user|>
+He threw me a surprise party and jumped out at me scaring me half to death! </s>
+<|assistant|>
+"~Oh my, did you have a good time?~He threw me a surprise party and jumped out at me scaring me half to death! ~That's so sweet! I'm glad he didn't hurt you.
+892~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+One time I was camping out in the woods in California with some friends. I ended up getting lost on my way back to the camping spot in the middle of the night.</s>
+<|assistant|>
+Wow that must have been scary!</s>
+<|user|>
+If that wasn't frightening enough, I ended up getting chased by a stranger while I was looking for my camp mates!</s>
+<|assistant|>
+"~How long were you lost for?~If that wasn't frightening enough, I ended up getting chased by a stranger while I was looking for my camp mates!~Oh my goodness! I would have been so scared!
+1503~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I am so proud of my son</s>
+<|assistant|>
+What did he do?</s>
+<|user|>
+He got the highest score on a test</s>
+<|assistant|>
+"~That is impressive! I hope he is proud too!~He got the highest score on a test~That's great! What subject?
+2483~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+My kids birthday was last weekend, my whole family showed up! they didn't even tell me they were coming</s>
+<|assistant|>
+Wow, that had to be quite a surprise.  I hope you like them</s>
+<|user|>
+Yea, i do. hah. They live a few states away, which is why it was so unexpected. don't see them often.</s>
+<|assistant|>
+"~Well thats good.  Hopefully it was a good party!~Yea, i do. hah. They live a few states away, which is why it was so unexpected. don't see them often.~That's nice.  I hope you have a good relationship with them
+1216~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I was quite distressed to hear of the passing of Anthony Bourdain. That someone who has given so much joy to a huge number of people should take his own life is just awful.</s>
+<|assistant|>
+I know!  I was just watching his show on Netflix!  So sad, especially since he had a little girl he is leaving behind.</s>
+<|user|>
+Indeed. Depression is a terrible disease and there simply aren't enough resources devoted to mental illness, imo.</s>
+<|assistant|>
+"~I agree.  He had so much to live for.  I guess it is hard to know what demons people are hiding inside.~Indeed. Depression is a terrible disease and there simply aren't enough resources devoted to mental illness, imo.~I agree.  I have a friend who is going through it right now and it's so hard to watch.  I hope he can get the help he needs.
+1772~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I went to a heavy metal music festival in Las Vegas a few years ago! I had fun, but to be honest it was a bit of an emotional roller coaster.</s>
+<|assistant|>
+Oh, I don't know why concerts make me feel a bit sentimental</s>
+<|user|>
+I think it's because everybody can relate when it comes to live music. My girlfriend broke up with me the second day, but we had to stay in the same room.</s>
+<|assistant|>
+"~That must have been horrible! I'm so sorry you went thru that~I think it's because everybody can relate when it comes to live music. My girlfriend broke up with me the second day, but we had to stay in the same room.~That's a tough situation to be in
+2231~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I am so tired of hauling garbage to the county dump.</s>
+<|assistant|>
+Are you cleaning out a house or do you not have garbage pick-up?</s>
+<|user|>
+The company in my city just quit picking up for any of the residents, so the dump has a line every day.</s>
+<|assistant|>
+"~That is insane! I've never heard of anything like that before.  You all should start protesting!~The company in my city just quit picking up for any of the residents, so the dump has a line every day.~That's terrible. I hope you can find a solution soon.
+2383~"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+My dog chewed a hole in my carpet 2 weeks ago.. I was very disgusted to say the least!</s>
+<|assistant|>
+Haha I'm sorry! My dog is chill now but he ate a hole in the wall when he was a puppy lol</s>
+<|user|>
+Oh dang, I guess I can't complain too much then, that's brutal!</s>
+<|assistant|>
+"~Yeah lol what breed is yours? Mine is a golden so he loves eating stuff. Now it's thankfully just actual food.~Oh dang, I guess I can't complain too much then, that's brutal!~Yeah, I'm sorry! I hope you can get it fixed!
