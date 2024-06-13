@@ -64,10 +64,20 @@ def run_sft():
     with wandb.init():
         config = wandb.config
         import torch
-
         model_id = config.model_id
         output_dir_base = config.output_dir_base
-
+        args = argparse.Namespace()
+        args.base_model = model_id
+        args.base_dir = output_dir_base
+        args.hf_key_path = config.hf_key_path
+        args.is_local = config.is_local
+        args.is_test = config.is_test
+        args.is_mmlu_subset = config.is_mmlu_subset
+        args.test_frac = config.test_frac
+        if config.local_adapter != "none":
+            run_wo_sft(config, args)
+            return
+        
         tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side="right",
                                                   padding=True)
         tokenizer.add_special_tokens({'pad_token': "[PAD]"})
@@ -169,14 +179,7 @@ def run_sft():
         time.sleep(15)
 
         # run mmlu evaluation and preds generation
-        args = argparse.Namespace()          
-        args.base_model = model_id
         args.adapter = output_dir.split("/")[2]
-        args.base_dir = output_dir_base
-        args.hf_key_path = config.hf_key_path
-        args.is_local = config.is_local
-        args.is_test = config.is_test
-        args.is_mmlu_subset = config.is_mmlu_subset
         run_eval(args, "sft")
 
         if config.dpo:
@@ -185,6 +188,20 @@ def run_sft():
             args.adapter = dpo_out_dir
             # import ipdb; ipdb.set_trace()
             run_eval(args, "dpo")
+
+
+def run_wo_sft(config, args):
+    args.adapter = config.local_adapter
+    args.test_frac = config.test_frac
+    #run_eval(args, "sft")
+
+    if config.dpo:
+        args.dpo_name = config.dpo_name
+        dpo_out_dir = run_dpo(args)
+        args.adapter = dpo_out_dir
+        # import ipdb; ipdb.set_trace()
+        time.sleep(15)
+        run_eval(args, "dpo")
 
 
 def run_eval(args: argparse.Namespace, run_prefix: str = "") -> None:

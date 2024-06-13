@@ -18,7 +18,6 @@ def calc_metrics(pth, model_id, metrics: List[str], run_pref: str = ""):
     test_df = pd.read_csv(pth, sep="~")
     test_df = test_df[test_df['gens'].str.len() != 0]
     res = {}
-
     if "epitome" in metrics:     # Calculate EPITOME, DIFF-EPITOME metrics
         from src.emp_metrics.diff_epitome import EmpathyScorer, \
                 to_epi_format, get_epitome_score, avg_epitome_score

@@ -1,0 +1,50 @@
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full10_d1,tokenizer=../empathy-generation/results/zephyr-7b-sft-full10_d1 --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.4526|±  |0.0040|
+
+
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full10,tokenizer=../empathy-generation/results/zephyr-7b-sft-full10 --tasks mmlu --num_fewshot 5 --batch_size 8
+mmlu              |N/A    |none  |     0|acc   |↑  |0.5813|±  |0.0040|
+
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full122,tokenizer=../empathy-generation/results/zephyr-7b-sft-full122 --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.5813|±  |0.0040|
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf \ --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.5882|±  |0.0039|
+
+
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=meta-llama/Meta-Llama-3-8B,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.6515|±  |0.0038|
+
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full10_d71,tokenizer=../empathy-generation/results/zephyr-7b-sft-full10_d71 --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.5545|±  |0.0040|
+
+
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full10_d72,tokenizer=../empathy-generation/results/zephyr-7b-sft-full10_d72 --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.4283|±  |0.0041|
+
+
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full10_d80,tokenizer=../empathy-generation/results/zephyr-7b-sft-full10_d80 --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.3837|±  |0.0040| 
+	
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full10_d81,tokenizer=../empathy-generation/results/zephyr-7b-sft-full10_d81 --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.4605|±  |0.0041|:	
+
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full10_d82,tokenizer=../empathy-generation/results/zephyr-7b-sft-full10_d82 --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.4688|±  |0.0041|
+
+
+
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full10_d90,tokenizer=../empathy-generation/results/zephyr-7b-sft-full10_d90 --tasks mmlu --num_fewshot 5 --batch_size 8
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.5197|±  |0.0040|
+
+
+
+	

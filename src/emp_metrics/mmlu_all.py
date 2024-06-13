@@ -6,7 +6,6 @@ import time
 from typing import Dict
 import wandb
 from src.emp_metrics.ed_load import get_ed_for_generation
-wandb.init(mode="disabled")
 from peft import PeftModel
 from deepeval.models import DeepEvalBaseLLM
 from transformers import BitsAndBytesConfig, AutoModelForCausalLM, AutoTokenizer, pipeline, \
@@ -32,24 +31,27 @@ class Mistral7B(DeepEvalBaseLLM):
         p = self.prep_for_generation(prompt, sys_msg=self.sys_msg,
                                  tokenize=False, add_generation_prompt=True)
         dec = self.pipe(p, return_full_text=False)[0]["generated_text"]
-
-        if len(dec) == 9:
-            dec = dec[-1]
-
-        if len(dec) > 0 and "is: " in dec:
-            match = re.search(r'is: ([ABCD])', dec)
-            if match:
+        # if len(dec) == 9:
+        #     dec = dec[-1]
+        # print(dec)
+        if len(dec) > 0:  # and "is: " in dec:
+            if (match := re.search(r'is: ([abcdABCD])', dec)):
                 dec = match.group(0)[-1]
-
-        if len(dec) < 1:
+            elif (match := re.search(r'is ([abcdABCD])', dec)):
+                dec = match.group(0)[-1]
+            elif (match := re.search(r'swer: ([abcdABCD])', dec)):
+                dec = match.group(0)[-1]
+        else:
             dec = " "
-
+        dec = dec.upper()
+        # breakpoint()
         return dec
 
     def prep_for_generation(self, prompt: str,  **kwargs) -> str:
         odd_d = [] if self.sys_msg is None else [{"role": "system", "content": self.sys_msg}]
         odd_d.append({"role": "user", "content": prompt})
         test_tok = self.tokenizer.apply_chat_template(odd_d, **kwargs)
+
         return test_tok
 
     async def a_generate(self, prompt: str) -> str:
@@ -113,11 +115,9 @@ def get_gen_sys_msg(model_name):
 
 def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id:str=None,
                  hf_key_path=None, is_local=False, is_test=False, 
-                 is_mmlu_subset=False, run_pref:str=""):
-    # import ipdb; ipdb.set_trace()
+                 is_mmlu_subset=False, run_pref:str="", test_frac=1.0):
     login(Path(hf_key_path).read_text().strip())
     # mmlu
-    # import ipdb; ipdb.set_trace()
     if output_dir_base in adapter_id:
         adapter_id = adapter_id.replace(output_dir_base, "")
     model_dir = "{}/{}".format(output_dir_base.rstrip("/"), adapter_id)
@@ -152,20 +152,10 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id:str=None,
     eval_model = Mistral7B(pipe=pipee, tokenizer=tokenizer, sys_msg=sys_msg)
 
     if is_test:
-        benchmark = MMLU(tasks=[MMLUTask.GLOBAL_FACTS], n_shots=5)
+        benchmark = MMLU(tasks=[MMLUTask.HIGH_SCHOOL_BIOLOGY], n_shots=5)
     elif is_mmlu_subset:
         benchmark = MMLU(tasks=[
-            MMLUTask.GLOBAL_FACTS,
-            MMLUTask.BUSINESS_ETHICS,
-            MMLUTask.COLLEGE_COMPUTER_SCIENCE,
-            MMLUTask.PHILOSOPHY,
-            MMLUTask.LOGICAL_FALLACIES,
-            MMLUTask.INTERNATIONAL_LAW,
-            MMLUTask.MISCELLANEOUS,
-            MMLUTask.MARKETING,
-            MMLUTask.WORLD_RELIGIONS,
-            MMLUTask.MORAL_SCENARIOS,
-            MMLUTask.ASTRONOMY], n_shots=5)
+            MMLUTask.HIGH_SCHOOL_BIOLOGY], n_shots=5)
     else:
         benchmark = MMLU(n_shots=5)
     benchmark.evaluate(model=eval_model)
@@ -188,9 +178,9 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id:str=None,
     test_df = get_ed_for_generation("test", tokenizer, sys_msg=sys_msg,
                                     tokenize=False, add_generation_prompt=True)
     if is_test:
-        test_df = test_df.head(10).copy()
-    elif is_mmlu_subset:
-        test_df = test_df.sample(int(len(test_df)*0.33)).copy()
+        test_df = test_df.head(50).copy()
+    elif test_frac < 0.9999:
+        test_df = test_df.sample(int(len(test_df) * test_frac)).copy()
 
     gens = []
     for index, r in test_df.iterrows():
@@ -218,17 +208,18 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id:str=None,
     print(f"Sleeping for {sl_time}s...")
     time.sleep(sl_time)
     print("Done.")
-    return {"path_preds": pth, "path_mmlu": save_to}
+    return {
+            "path_preds": pth, 
+            "path_mmlu": save_to}
 
 
 def run_mmlu(args: argparse.Namespace) -> Dict:
-    # import ipdb; ipdb.set_trace()
     if args.adapter == "none":
         ret = calc_metrics(
                 f"{args.base_dir}/mmlu_x_all_{args.base_model.split('/')[1]}.txt",
                 args.base_dir, args.base_model, hf_key_path=args.hf_key_path,
                 is_local=args.is_local, is_test=args.is_test, 
-                run_pref=args.run_pref)
+                run_pref=args.run_pref, test_frac=args.test_frac)
     else:
         if args.is_local:
             pth = args.adapter
@@ -240,7 +231,7 @@ def run_mmlu(args: argparse.Namespace) -> Dict:
                 hf_key_path=args.hf_key_path, is_local=args.is_local,
                 is_test=args.is_test,
                 is_mmlu_subset=args.is_mmlu_subset,
-                run_pref=args.run_pref)
+                run_pref=args.run_pref, test_frac=args.test_frac)
     return ret
 
 
@@ -248,11 +239,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-bm", "--base_model", help="base model name")
     parser.add_argument("-a", "--adapter", help="adapter name", default="none")
-    parser.add_argument("-d", "--base_dir", default="./results", 
-            help="base dir with saved models")
+    parser.add_argument("-d", "--base_dir", default="./results",
+                        help="base dir with saved models")
     parser.add_argument("-k", "--hf_key_path", help="absolute path")
-    parser.add_argument("-l", "--is_local", default=False, help="gets models from Hub", 
-            action=argparse.BooleanOptionalAction)
-    parser.add_argument("-t", "--is_test", default=False, help="run on low fidelity", 
-            action=argparse.BooleanOptionalAction)
+    parser.add_argument("-l", "--is_local", default=False,
+                        help="gets models from Hub",
+                        action=argparse.BooleanOptionalAction)
+    parser.add_argument("-t", "--is_test", default=False,
+                        help="run on low fidelity",
+                        action=argparse.BooleanOptionalAction)
+    parser.add_argument("-p", "--run_pref", default="x")
     run_mmlu(parser.parse_args())

@@ -1,6 +1,6 @@
-
+{
     "method": "grid",
-    "name": "sweep_sft-full",
+    "name": "test",
     "metric": {
         "goal": "minimize",
         "name": "train/loss"
@@ -12,7 +12,7 @@
         "learning_rate": {"values": [1e-5]},
         "max_grad_norm": {"values": [0.3]},
         "warmup_ratio": {"values": [0]},
-        "r": {"values": [1024]},
+        "r": {"values": [1028]},
         "target_modules": {"values": [["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"]]},
         "bias": {"values": ["none"]},
         "lora_alpha": {"values": [256]},
@@ -27,8 +27,8 @@
 	"is_test": {"values": [false]},
 	"is_mmlu_subset": {"values": [true]},
 	"dpo": {"values": [false]},
-	"dpo_name": {"values": ["d11"]},
+	"dpo_name": {"values": ["d122"]},
 	"output_dir_base": {"values": ["./results/"]},
-	"local_adapter": {"values": ["none"]}
+	"local_adapter": {"values": ["zephyr-7b-sft-full122"]}
     }
 }

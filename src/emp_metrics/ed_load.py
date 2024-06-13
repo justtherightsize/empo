@@ -160,6 +160,54 @@ def get_ed_for_dpo(split: str, tokenizer, sys_msg=None, **kwargs) -> Dataset:
 
     k_msg = {k:c for k,c in zip(keys, chosen)}
     opposite_keys = get_opposite_ed_keys(df)
+    opposite_keys2 = get_opposite_ed_keys(df)
+    opposite_keys3 = get_opposite_ed_keys(df)
+
+    # idk why i put this here... 
+    # bad = [r for r in opposite_keys.values() if r not in k_msg] 
+
+    k_rejected = {k: k_msg[r] for k,r in opposite_keys.items() if r in k_msg}
+    k_rejected2 = {k: k_msg[r] for k,r in opposite_keys2.items() if r in k_msg}
+    k_rejected3 = {k: k_msg[r] for k,r in opposite_keys3.items() if r in k_msg}
+
+    assert len(keys) == len(chosen) and len(keys) == len(odd_dias)
+    prefs = [{"prompt": tokenizer.apply_chat_template(p, tokenize=False),
+              "chosen": tokenizer.apply_chat_template(c, tokenize=False),
+              "rejected": tokenizer.apply_chat_template(k_rejected[r], tokenize=False)}
+             for p,c,r in zip(odd_dias, chosen, keys) if r in k_rejected]
+    prefs2 = [{"prompt": tokenizer.apply_chat_template(p, tokenize=False),
+              "chosen": tokenizer.apply_chat_template(c, tokenize=False),
+              "rejected": tokenizer.apply_chat_template(k_rejected2[r], tokenize=False)}
+             for p,c,r in zip(odd_dias, chosen, keys) if r in k_rejected2]
+    prefs3 = [{"prompt": tokenizer.apply_chat_template(p, tokenize=False),
+              "chosen": tokenizer.apply_chat_template(c, tokenize=False),
+              "rejected": tokenizer.apply_chat_template(k_rejected3[r], tokenize=False)}
+             for p,c,r in zip(odd_dias, chosen, keys) if r in k_rejected3]
+
+    allprefs = [] # put them all in one batch as in the hf docs
+    for a,b,c in zip(prefs, prefs2, prefs3):
+        allprefs.append(a)
+        allprefs.append(b)
+        allprefs.append(c)
+    res = Dataset.from_pandas(pd.DataFrame(data=allprefs))
+    return res
+
+
+def get_ed_for_kto(split: str, tokenizer, sys_msg=None, **kwargs) -> Dataset:
+    """Pipeline for getting an non-tokenized ED split
+    in the chat template for kto.
+    @param split: one of {train, validation, test}
+    @param tokenizer: hf tokenizer
+    @return: Dataset in chat template
+    """
+    df, keys, dialogs = load_preprocess_ed(split)
+    k_dias = {k: dialog2chat(d) for k,d in zip(keys, dialogs)}
+
+    odd_dias, chosen, _ = prep4generation(k_dias.values(), sys_msg)
+    chosen = [[{"role": "assistant", "content": c}] for c in chosen]
+
+    k_msg = {k:c for k,c in zip(keys, chosen)}
+    opposite_keys = get_opposite_ed_keys(df)
 
     bad = [r for r in opposite_keys.values() if r not in k_msg]
 
@@ -167,11 +215,20 @@ def get_ed_for_dpo(split: str, tokenizer, sys_msg=None, **kwargs) -> Dataset:
 
     assert len(keys) == len(chosen) and len(keys) == len(odd_dias)
     prefs = [{"prompt": tokenizer.apply_chat_template(p, tokenize=False),
-              "chosen": tokenizer.apply_chat_template(c, tokenize=False),
-              "rejected": tokenizer.apply_chat_template(k_rejected[r], tokenize=False)}
-             for p,c,r in zip(odd_dias, chosen, keys) if r in k_rejected]
-
-    res = Dataset.from_pandas(pd.DataFrame(data=prefs))
+              "completion": tokenizer.apply_chat_template(c, tokenize=False),
+              "label": True}
+             for p, c, r in zip(odd_dias, chosen, keys) if r in k_rejected]
+    rejes = [{"prompt": tokenizer.apply_chat_template(p, tokenize=False),
+              "completion": tokenizer.apply_chat_template(
+                  k_rejected[r], tokenize=False),
+              "label": False}
+             for p, c, r in zip(odd_dias, chosen, keys) if r in k_rejected]
+    kto_data = []
+    for pr, rj in zip(prefs, rejes):
+        kto_data.append(pr)
+        kto_data.append(rj)
+    res = Dataset.from_pandas(pd.DataFrame(data=kto_data))
+    # import ipdb; ipdb.set_trace()
     return res
 
 

@@ -9,29 +9,14 @@ from huggingface_hub import login
 from pathlib import Path
 from transformers import AutoTokenizer, BitsAndBytesConfig, AutoModelForCausalLM
 from numpy import percentile
-import os
-import re
-import shutil
-import glob
-import time
 
-def train_dpo(base_model_id, model_id, output_dir_base, new_name):
+
+def train_kto(base_model_id, model_id, output_dir_base, new_name):
     output_dir = output_dir_base + model_id
-    
     dpo_output_dir = output_dir_base + model_id + "_" + new_name
-    an = model_id + '_' + new_name
-    # import ipdb; ipdb.set_trace()
-    prev_ords = [
-            match.group().replace(an, "") 
-            for d in os.listdir(output_dir_base) 
-            if (match := re.search(rf"{an}\d+$", d))]
-    prev_ords = [int(x.replace(an, "")) for x in prev_ords]
-    # import ipdb; ipdb.set_trace()
-    dpo_output_dir = dpo_output_dir + str(
-                 1 + max(prev_ords) if len(prev_ords) > 0 else 0) 
-
-    print(dpo_output_dir)
     config = wandb.config
+
+    # import ipdb; ipdb.set_trace()
     tokenizer = AutoTokenizer.from_pretrained(output_dir)
 
     # load datasets
@@ -101,33 +86,32 @@ def train_dpo(base_model_id, model_id, output_dir_base, new_name):
         use_cache=False
     )
     ref_model.resize_token_embeddings(len(tokenizer))
-    ref_model = PeftModel.from_pretrained(ref_model, output_dir, 
-                                          is_trainable=False)
-    print("------------Both adapters loaded--------------")
+    ref_model = PeftModel.from_pretrained(ref_model, output_dir, is_trainable=True)
+
     training_args = DPOConfig(
         output_dir=dpo_output_dir,
         num_train_epochs=1,
-        per_device_train_batch_size=config.dpo_per_device_train_batch_size,
-        per_device_eval_batch_size=config.dpo_per_device_eval_batch_size,
+        per_device_train_batch_size=8,
+        per_device_eval_batch_size=4,
         gradient_accumulation_steps=1,
         gradient_checkpointing=True,
         optim="adamw_torch_fused",
-        learning_rate=config.dpo_learning_rate,
+        learning_rate=5e-5,
         max_grad_norm=0.3,
         warmup_ratio=0.1,
         lr_scheduler_type="cosine",
-        logging_steps=0.1,
-        save_steps=0.1,
+        logging_steps=25,
+        save_steps=500,
         save_total_limit=2,
         evaluation_strategy="steps",
-        eval_steps=0.2,
+        eval_steps=700,
         bf16=True,
-        # tf32=True,
+        tf32=True,
         push_to_hub=False,
         report_to="wandb"
     )
     dpo_args = {
-        "beta": config.dpo_beta,  # Higher beta means less divergence
+        "beta": 0.1,  # Higher beta means less divergence
         "loss_type": "sigmoid"
     }
     trainer = DPOTrainer(
@@ -150,15 +134,6 @@ def train_dpo(base_model_id, model_id, output_dir_base, new_name):
     trainer.train()
     trainer.save_model(dpo_output_dir)
     print(f"5.-----Saving DPO to: {dpo_output_dir}--------")
-    del model
-    del ref_model
-    del tokenizer
-    del trainer
-    checkpt_dirs = glob.glob(dpo_output_dir + "/checkpoint-*")
-    for dir_path in checkpt_dirs:
-        shutil.rmtree(dir_path)
-    time.sleep(5)
-
     return dpo_output_dir
 
 
@@ -174,4 +149,4 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--new_name", help="save name")
 
     ARGS = parser.parse_args()
-    train_dpo(ARGS.base_model, ARGS.adapter, ARGS.base_dir, ARGS.new_name)
+    train_kto(ARGS.base_model, ARGS.adapter, ARGS.base_dir, ARGS.new_name)
