@@ -4,13 +4,6 @@ Intensity, Valence, Arousal.
 Author: Andrew Lee 
 Source: https://github.com/MichiganNLP/empathy_eval/blob/master/scripts/vad.py 
 
-TODO:
-
-need to create the conv object
-
-the first one was rewriten by generating a smallers sample with the same name... so, there's 4 columns: chat_templates~gen_targets~prevs~gens. chat_templates contains the dialog before the last assistant message. gen_targets contains the golden last assistant message, gens is the generated assistant message, prevs is just the last user message (is also contained in the first column as the last utterance)
-
-
 
 """
 
@@ -165,10 +158,8 @@ def results_report(scores):
 def evaluate(results_df, col="gens"):
     """
     Input:
-        ed_dir: 
-            path to directory containing the empathetic dialogues split files
-        responses:
-            can be a list of response strings or a file path
+        results_df: 
+            loaded results_df or path to generations file
         col: 
             not needed if responses is a list/iterable of response strings, 
             but if it's a filepath, you could say which column you want to eval. 
@@ -198,7 +189,8 @@ def evaluate(results_df, col="gens"):
         }
 
     print("VAD scores for system")
-    print(tabulate(scores))
+    scores = {'metric':scores.keys(), 'score':scores.values()}
+    print(tabulate(scores, headers=['metric', 'score']))
 
     return scores, vad_stats
 

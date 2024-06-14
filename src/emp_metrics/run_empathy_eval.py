@@ -76,12 +76,24 @@ def calc_metrics(pth, model_id, metrics: List[str], run_pref: str = ""):
         
     if "nidf" in metrics:
         import specificity
-        specificity.evaluate(args.ed_dir, test_df['gens'].values)
+        col = "gens" if not args.human else "gen_targets"
+        specificity.evaluate(args.ed_dir, test_df[col].values)
 
     if "vad" in metrics:
-        # TODO: bug to fix
         import vad
-        vad.evaluate(test_df)
+        col = "gens" if not args.human else "gen_targets"
+        vad.evaluate(test_df, col=col)
+
+    if "diversity" in metrics:
+        # TODO: may need to check output paths in ngrams.py and filepaths in tree.py
+        import ngrams
+        col = "gens" if not args.human else "gen_targets"
+
+        ngrams.evaluate(pth, col=col)
+
+        import gather_tree_stats
+        gather_tree_stats.evaluate(pth, col=col)
+
 
 
     # Write results
@@ -123,12 +135,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-g", "--gpu", default="1", help="not implemented")
     parser.add_argument('-sp', '--save_protocol', choices=['og', 'new'], default="new", help='og is from ondrej new is from allie')
-
+    parser.add_argument('-hu', '--human', help='Run evaluation on human responses', action='store_true')
     parser.add_argument("-a", "--adapter", help="adapter name")
     parser.add_argument("-m", "--metrics", nargs="+",
-                        help="choices: epitome, bertscore, nidf (specificity)", choices=["epitome", "bertscore", 'nidf', 'vad'])
+                        help="choices: epitome, bertscore, nidf (specificity)", choices=["epitome", "bertscore", 'nidf', 'vad', 'diversity'])
     parser.add_argument("-d", "--base_dir", default="./results", help="base dir with saved models")
-    parser.add_argument("-f", "--data_file", default=os.path.join(p,"data/generated_text/preds_x_zephyr-7b-sft-full122.txt"), help="file with generations")
+    parser.add_argument("-f", "--data_file", default=os.path.join(p,"data/generated_text/preds_x_zephyr-7b-sft-full122.full.txt"), help="file with generations")
     parser.add_argument("-o", "--output_dir", default=os.path.join(p,"data/results/empathy_eval_results"), help="directory to save the results")
     parser.add_argument("-ed", "--ed_dir", default=os.path.join(p,"data/empathy_datasets/empathetic_dialogues"), help="directory path of empathetic dialogues dataset")
 

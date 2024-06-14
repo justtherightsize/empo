@@ -6,8 +6,8 @@ vad_dict = {}
 
 with open(file, 'r') as f:
     for l in f:
-        parts = l.split()
-        vad_dict[parts[0]] = parts[1:] 
+        parts = l.split('\t')
+        vad_dict[parts[0]] = [float(item.strip()) for item in parts[1:]] 
 
 
 
