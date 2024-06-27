@@ -46,5 +46,5 @@ CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-hand
 |mmlu              |N/A    |none  |     0|acc   |↑  |0.5197|±  |0.0040|
 
 
-
-	
+CUDA_VISIBLE_DEVICES=0 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=../empathy-generation/results/zephyr-7b-sft-full10_d91,tokenizer=../empathy-generation/results/zephyr-7b-sft-full10_d91 --tasks mmlu --num_fewshot 5 --batch_size 4
+|mmlu              |N/A    |none  |     0|acc   |↑  |0.5717|±  |0.0040|	
