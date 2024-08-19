@@ -193,15 +193,15 @@ def run_sft():
 def run_wo_sft(config, args):
     args.adapter = config.local_adapter
     args.test_frac = config.test_frac
-    #run_eval(args, "sft")
+    # run_eval(args, "sft")
 
     if config.dpo:
         args.dpo_name = config.dpo_name
         dpo_out_dir = run_dpo(args)
         args.adapter = dpo_out_dir
         # import ipdb; ipdb.set_trace()
-        time.sleep(15)
-        run_eval(args, "dpo")
+        # time.sleep(15)
+        # run_eval(args, "dpo")
 
 
 def run_eval(args: argparse.Namespace, run_prefix: str = "") -> None:

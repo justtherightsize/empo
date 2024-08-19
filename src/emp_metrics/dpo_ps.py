@@ -102,7 +102,7 @@ def train_dpo(base_model_id, model_id, output_dir_base, new_name):
     )
     ref_model.resize_token_embeddings(len(tokenizer))
     ref_model = PeftModel.from_pretrained(ref_model, output_dir, 
-                                          is_trainable=False)
+                                          is_trainable=True)
     print("------------Both adapters loaded--------------")
     training_args = DPOConfig(
         output_dir=dpo_output_dir,

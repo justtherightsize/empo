@@ -1,7 +1,7 @@
 from itertools import chain
 from pathlib import Path
 from typing import Union, Tuple, Any, List, Dict
-
+import ipdb
 import pandas as pd
 from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer
@@ -12,13 +12,15 @@ from transformers import AutoTokenizer
 from src.emp_metrics.emotions import get_opposite_ed_keys
 
 
-def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str], List[str]]:
+def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str],
+                       List[str], List[str]]:
     """
-   ED from HuggingFace. Unescapes the commas. Groups the dialogs by keys. Sorts the groups by utterance_idx.
-   @param split: one of {train, validation, test}
-   @return: the dataframe, keys of dilogs, utterances of dialogs
-   TODO: remove whole dialogs which contain the malformed keyword
-   """
+    ED from HuggingFace. Unescapes the commas. Groups the dialogs by keys.
+    Sorts the groups by utterance_idx.
+    @param split: one of {train, validation, test}
+    @return: the dataframe, keys of dilogs, utterances of dialogs
+    TODO: remove whole dialogs which contain the malformed keyword
+    """
     dataset = load_dataset("empathetic_dialogues")
     dataset.set_format("pandas")
 
@@ -31,14 +33,17 @@ def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str], Li
     df_group = test_df.groupby(["conv_id"])
     test_dialogs = []
     test_keys = []
+    emotions = []
     for name_of_group, contents_of_group in df_group:
         if len(contents_of_group) < 2:
             continue
         contents_of_group.sort_values("utterance_idx")
         test_dialogs.append(contents_of_group["utterance"].to_list())
         test_keys.append(name_of_group[0])
+        emotions.append(contents_of_group["context"].iloc[0])
+        # db1 = ipdb.set_trace()
 
-    return test_df, test_keys, test_dialogs
+    return test_df, test_keys, test_dialogs, emotions
 
 
 def get_progressive_chunks(dialog: List[str], system_message: str = None, user_key: str = "user",
@@ -109,24 +114,28 @@ def get_ed(split: str, tokenizer, **kwargs) -> Dataset:
     return dataset
 
 
-def prep4generation(dialogs, sys_msg=None, user_key: str = "user", assistant_key: str = "assistant"):
+def prep4generation(dialogs, sys_msg=None, user_key: str = "user",
+                    assistant_key: str = "assistant", emotions=None):
     odd_dias = []
     gen_targets = []
     prevs = []
     system_message = {"role": "system", "content": sys_msg}
-    for d in dialogs:
+    emotionz = []
+    for d,e in zip(dialogs, emotions):
         if len(d) % 2 == 0 and d[-1]["role"] == assistant_key:
             odd_dias.append(d[:-1] if sys_msg is None else [system_message] + d[:-1])
             gen_targets.append(d[-1]["content"])
             prevs.append(d[-2]["content"])
+            emotionz.append(e)
         elif len(d) % 2 == 1 and d[-1]["role"] == user_key and len(d) >= 3:
             odd_dias.append(d[:-2] if sys_msg is None else [system_message] + d[:-2])
             gen_targets.append(d[-2]["content"])
             prevs.append(d[-3]["content"])
+            emotionz.append(e)
         else:
             print(len(d))
             # raise ValueError(d)
-    return odd_dias, gen_targets, prevs
+    return odd_dias, gen_targets, prevs, emotionz
 
 
 def get_ed_for_generation(split: str, tokenizer, sys_msg=None, **kwargs) -> pd.DataFrame:
@@ -135,14 +144,16 @@ def get_ed_for_generation(split: str, tokenizer, sys_msg=None, **kwargs) -> pd.D
     @param tokenizer: hf tokenizer
     @return: Dataset in chat template
     """
-    _, _, dialogs = load_preprocess_ed(split)
-    dias = [dialog2chat(d) for d in dialogs]
-    odd_dias, gen_targets, prevs = prep4generation(dias, sys_msg)
+    _, _, dialogs, emotionz = load_preprocess_ed(split)
+    dias = [dialog2chat(d) for d in dialogs]  # does not filter anything
+    odd_dias, gen_targets, prevs, emotionzz = prep4generation(dias, sys_msg,
+            emotions=emotionz)
 
     test_tok = [tokenizer.apply_chat_template(x, **kwargs) for x in odd_dias]
     df_final = pd.DataFrame(test_tok, columns=['chat_templates'])
     df_final['gen_targets'] = gen_targets
     df_final['prevs'] = prevs
+    df_final['emotions'] = emotionzz
     return df_final
 
 
@@ -152,10 +163,11 @@ def get_ed_for_dpo(split: str, tokenizer, sys_msg=None, **kwargs) -> Dataset:
     @param tokenizer: hf tokenizer
     @return: Dataset in chat template
     """
-    df, keys, dialogs = load_preprocess_ed(split)
+    df, keys, dialogs, emotionz = load_preprocess_ed(split)
     k_dias = {k: dialog2chat(d) for k,d in zip(keys, dialogs)}
 
-    odd_dias, chosen, _ = prep4generation(k_dias.values(), sys_msg)
+    odd_dias, chosen, _, _ = prep4generation(k_dias.values(), sys_msg,
+                                             emotions=emotionz)
     chosen = [[{"role": "assistant", "content": c}] for c in chosen]
 
     k_msg = {k:c for k,c in zip(keys, chosen)}

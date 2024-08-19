@@ -14,7 +14,7 @@ import pandas as pd
 np.seterr(all='raise')
 
 
-def calc_metrics(pth, model_id, metrics: List[str], run_pref: str = ""):
+def calc_metrics(pth, output_dir_base, metrics: List[str], run_pref: str = ""):
     test_df = pd.read_csv(pth, sep="~")
     test_df = test_df[test_df['gens'].str.len() != 0]
     res = {}
@@ -40,9 +40,9 @@ def calc_metrics(pth, model_id, metrics: List[str], run_pref: str = ""):
                 gt_EX_scores, gt_ER_scores, diff_IP_scores, diff_EX_scores,
                 diff_ER_scores)
         res["epitome"] = {k: str(v) for k, v in epitome_report.items()}
-        wandb.log({run_pref + "_" + "diff_er": res["epitome"]["diff_ER"]})
-        wandb.log({run_pref + "_" + "diff_ex": res["epitome"]["diff_EX"]})
-        wandb.log({run_pref + "_" + "diff_ip": res["epitome"]["diff_IP"]})
+        # wandb.log({run_pref + "_" + "diff_er": res["epitome"]["diff_ER"]})
+        # wandb.log({run_pref + "_" + "diff_ex": res["epitome"]["diff_EX"]})
+        # wandb.log({run_pref + "_" + "diff_ip": res["epitome"]["diff_IP"]})
         del epitome_empathy_scorer
 
     if "bertscore" in metrics:
@@ -57,15 +57,13 @@ def calc_metrics(pth, model_id, metrics: List[str], run_pref: str = ""):
         pbert = np.mean(bs_results["precision"])
         rbert = np.mean(bs_results["recall"])
         f1bert = np.mean(bs_results["f1"])
-        wandb.log({run_pref + "_" + "bertf1": f1bert})
+        # wandb.log({run_pref + "_" + "bertf1": f1bert})
 
         res["bertscore"] = {"p_bert": str(pbert), "r_bert": str(rbert),
                             "f1_bert": str(f1bert)}
 
     # Write results
-    bert_pth = "{}/epib_{}.txt".format(
-            wandb.config.output_dir_base.rstrip("/"),
-            model_id.replace(wandb.config.output_dir_base, ""))
+    bert_pth = pth.replace("preds", "epib")
     with open(bert_pth, 'w') as f:
         f.write(
             pprint.pformat(res, compact=True).replace("'", '"'))
@@ -73,18 +71,16 @@ def calc_metrics(pth, model_id, metrics: List[str], run_pref: str = ""):
 
 
 def main(args: argparse.Namespace) -> None:
-    model_id = args.adapter
     output_dir_base = args.base_dir
     metrics = args.metrics
-    pth_to_csv = f"{output_dir_base}/preds_all_{model_id}.txt"
-    calc_metrics(pth_to_csv, model_id, metrics)
+    pth_to_csv = f"{output_dir_base}/{args.df_name}"
+    calc_metrics(pth_to_csv, output_dir_base, metrics)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-g", "--gpu", default="1", help="not implemented")
+    parser.add_argument("-n", "--df_name", help="file name of the dataframe")
 
-    parser.add_argument("-a", "--adapter", help="adapter name")
     parser.add_argument("-m", "--metrics", nargs="+",
                         help="one or more of: epitome, bertscore")
     parser.add_argument("-d", "--base_dir", default="./results",
