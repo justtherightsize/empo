@@ -14,6 +14,8 @@ from nltk.tokenize import word_tokenize
 import argparse
 import pandas as pd
 from tabulate import tabulate
+from tqdm import tqdm
+from collections import defaultdict
 i = os.path.dirname(os.path.realpath(__file__)).split('/').index('empathy-generation')
 p = '/'.join(os.path.dirname(os.path.realpath(__file__)).split('/')[:i+1])
 DATA_HOME = os.path.join(p, 'data/misc')
@@ -81,9 +83,11 @@ def get_vad_stats(data, response_col):
     Compute intensity, vad.
     """
 
-    results = []
+    # results = []
+    results = defaultdict(lambda:[])
 
-    for idx, row in data.iterrows():
+
+    for idx, row in tqdm(data.iterrows(), total=len(data)):
 
         # context = row["query"]
         last_utt = row["prevs"]
@@ -130,25 +134,38 @@ def get_vad_stats(data, response_col):
         diff_mean_d = mean_d_context - mean_d
         diff_intensity = max(context_intensity) - max(response_intensity)
 
-        results.append(
-            {
-                "max_v": max_v,
-                "mean_v": mean_v,
-                "max_a": max_a,
-                "mean_a": mean_a,
-                "max_d": max_d,
-                "mean_d": mean_d,
-                "diff_max_v": diff_max_v,
-                "diff_mean_v": diff_mean_v,
-                "diff_max_a": diff_max_a,
-                "diff_mean_a": diff_mean_a,
-                "diff_max_d": diff_max_d,
-                "diff_mean_d": diff_mean_d,
-                "diff_max_intensity": diff_intensity,
-            }
-        )
+        # results.append(
+        #     {
+        #         "max_v": max_v,
+        #         "mean_v": mean_v,
+        #         "max_a": max_a,
+        #         "mean_a": mean_a,
+        #         "max_d": max_d,
+        #         "mean_d": mean_d,
+        #         "diff_max_v": diff_max_v,
+        #         "diff_mean_v": diff_mean_v,
+        #         "diff_max_a": diff_max_a,
+        #         "diff_mean_a": diff_mean_a,
+        #         "diff_max_d": diff_max_d,
+        #         "diff_mean_d": diff_mean_d,
+        #         "diff_max_intensity": diff_intensity,
+        #     }
+        # )
+        results['max_v'].append(max_v)
+        results['mean_v'].append(mean_v)
+        results['max_a'].append(max_a)
+        results['mean_a'].append(mean_a)
+        results['max_d'].append(max_d)
+        results['mean_d'].append(mean_d)
+        results['diff_max_v'].append(diff_max_v)
+        results['diff_mean_v'].append(diff_mean_v)
+        results['diff_max_a'].append(diff_max_a)
+        results['diff_mean_a'].append(diff_mean_a)
+        results['diff_max_d'].append(diff_max_d)
+        results['diff_mean_d'].append(diff_mean_d)
+        results['diff_max_intensity'].append(diff_intensity)
 
-    return results
+    return pd.DataFrame(results)
 
 def results_report(scores):
     #TODO if we want
@@ -174,12 +191,16 @@ def evaluate(results_df, col="gens"):
 
     vad_stats = get_vad_stats(results_df, col)
 
-    diff_max_v = np.mean([x["diff_max_v"] for x in vad_stats])
-    diff_max_a = np.mean([x["diff_max_a"] for x in vad_stats])
-    diff_max_d = np.mean([x["diff_max_d"] for x in vad_stats])
-    diff_max_intensity = np.mean(
-        [x["diff_max_intensity"] for x in vad_stats]
-    )
+    # diff_max_v = np.mean([x["diff_max_v"] for x in vad_stats])
+    # diff_max_a = np.mean([x["diff_max_a"] for x in vad_stats])
+    # diff_max_d = np.mean([x["diff_max_d"] for x in vad_stats])
+    # diff_max_intensity = np.mean(
+    #     [x["diff_max_intensity"] for x in vad_stats]
+    # )
+    diff_max_v = vad_stats["diff_max_v"].mean()
+    diff_max_a = vad_stats["diff_max_a"].mean()
+    diff_max_d = vad_stats["diff_max_d"].mean()
+    diff_max_intensity = vad_stats["diff_max_intensity"].mean()
 
     scores = {
             "diff_max_v": diff_max_v,
