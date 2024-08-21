@@ -14,7 +14,8 @@ import pandas as pd
 np.seterr(all='raise')
 
 
-def calc_metrics(pth, output_dir_base, metrics: List[str], run_pref: str = ""):
+def calc_metrics(pth, output_dir_base, metrics: List[str], run_pref: str = "",
+                 save_epi: bool = False):
     test_df = pd.read_csv(pth, sep="~")
     test_df = test_df[test_df['gens'].str.len() != 0]
     res = {}
@@ -35,10 +36,24 @@ def calc_metrics(pth, output_dir_base, metrics: List[str], run_pref: str = ""):
             diff_IP_scores, diff_EX_scores, diff_ER_scores = \
             get_epitome_score(epi_in, epitome_empathy_scorer)
 
+        if save_epi:
+            test_df["pred_IP_scores"] = pred_IP_scores
+            test_df["pred_EX_scores"] = pred_EX_scores
+            test_df["pred_ER_scores"] = pred_ER_scores
+            test_df["gt_IP_scores"] = gt_IP_scores
+            test_df["gt_EX_scores"] = gt_EX_scores
+            test_df["gt_ER_scores"] = gt_ER_scores
+            test_df["diff_IP_scores"] = diff_IP_scores
+            test_df["diff_EX_scores"] = diff_EX_scores
+            test_df["diff_ER_scores"] = diff_ER_scores
+            new_pth = pth.replace(".txt", "_epi.txt")
+            test_df.to_csv(new_pth, sep="~")
+
         epitome_report = avg_epitome_score(
                 pred_IP_scores, pred_EX_scores, pred_ER_scores, gt_IP_scores,
                 gt_EX_scores, gt_ER_scores, diff_IP_scores, diff_EX_scores,
                 diff_ER_scores)
+
         res["epitome"] = {k: str(v) for k, v in epitome_report.items()}
         # wandb.log({run_pref + "_" + "diff_er": res["epitome"]["diff_ER"]})
         # wandb.log({run_pref + "_" + "diff_ex": res["epitome"]["diff_EX"]})
@@ -74,13 +89,15 @@ def main(args: argparse.Namespace) -> None:
     output_dir_base = args.base_dir
     metrics = args.metrics
     pth_to_csv = f"{output_dir_base}/{args.df_name}"
-    calc_metrics(pth_to_csv, output_dir_base, metrics)
+    calc_metrics(pth_to_csv, output_dir_base, metrics, save_epi=args.save_epi)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--df_name", help="file name of the dataframe")
-
+    parser.add_argument("-s", "--save_epi", default=False,
+                        help="save epitome scores per line",
+                        action=argparse.BooleanOptionalAction)
     parser.add_argument("-m", "--metrics", nargs="+",
                         help="one or more of: epitome, bertscore")
     parser.add_argument("-d", "--base_dir", default="./results",

@@ -200,7 +200,7 @@ def run_wo_sft(config, args):
         dpo_out_dir = run_dpo(args)
         args.adapter = dpo_out_dir
         # import ipdb; ipdb.set_trace()
-        # time.sleep(15)
+        time.sleep(10)
         # run_eval(args, "dpo")
 
 
