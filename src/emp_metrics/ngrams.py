@@ -499,7 +499,7 @@ def evaluate(responses_filepath, col='gens', output_dir=None, write_cache_dir='.
     data = [word_tokenize(sent) for sent in data]
     x = SpanProcessor(write_cache_dir)
     start = time.time()
-    _ = x.spanify(data, pool_size=10)
+    _ = x.spanify(data, pool_size=15)
     end = time.time()
     print("Time took ", end - start)
 
