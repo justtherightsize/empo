@@ -1,0 +1,58 @@
+{
+  "results": {
+    "leaderboard": {
+      "prompt_level_strict_acc,none": 0.009242144177449169,
+      "prompt_level_strict_acc_stderr,none": 0.004117875879187384,
+      "inst_level_loose_acc,none": 0.022781774580335732,
+      "inst_level_loose_acc_stderr,none": "N/A",
+      "prompt_level_loose_acc,none": 0.011090573012939002,
+      "prompt_level_loose_acc_stderr,none": 0.004506697115935844,
+      "exact_match,none": 0.023413897280966767,
+      "exact_match_stderr,none": 0.004152853143555657,
+      "inst_level_strict_acc,none": 0.02158273381294964,
+      "inst_level_strict_acc_stderr,none": "N/A",
+      "acc_norm,none": 0.02,
+      "acc_norm_stderr,none": 0.005208776304835297,
+      "acc,none": 0.269281914893617,
+      "acc_stderr,none": 0.004044153749948772,
+      "alias": "leaderboard"
+    },
+     "leaderboard_bbh": {
+      "acc_norm,none": 0.4115604929699705,
+      "acc_norm_stderr,none": 0.005984779677440141,
+      "alias": " - leaderboard_bbh"
+    },
+     "leaderboard_gpqa": {
+      "acc_norm,none": 0.28691275167785235,
+      "acc_norm_stderr,none": 0.013113391059902897,
+      "alias": " - leaderboard_gpqa"
+    },
+     "leaderboard_ifeval": {
+      "prompt_level_strict_acc,none": 0.009242144177449169,
+      "prompt_level_strict_acc_stderr,none": 0.004117875879187384,
+      "inst_level_strict_acc,none": 0.02158273381294964,
+      "inst_level_strict_acc_stderr,none": "N/A",
+      "prompt_level_loose_acc,none": 0.011090573012939002,
+      "prompt_level_loose_acc_stderr,none": 0.004506697115935844,
+      "inst_level_loose_acc,none": 0.022781774580335732,
+      "inst_level_loose_acc_stderr,none": "N/A",
+      "alias": " - leaderboard_ifeval"
+    },
+     "leaderboard_math_hard": {
+      "exact_match,none": 0.023413897280966767,
+      "exact_match_stderr,none": 0.004152853143555657,
+      "alias": " - leaderboard_math_hard"
+    },
+     "leaderboard_mmlu_pro": {
+      "acc,none": 0.269281914893617,
+      "acc_stderr,none": 0.004044153749948772,
+      "alias": " - leaderboard_mmlu_pro"
+    },
+    "leaderboard_musr": {
+      "acc_norm,none": 0.4193121693121693,
+      "acc_norm_stderr,none": 0.017712718840862042,
+      "alias": " - leaderboard_musr"
+    }
+ 
+  }
+}  
