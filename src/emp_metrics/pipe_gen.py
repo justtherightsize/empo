@@ -27,13 +27,13 @@ def get_gen_sys_msg(model_name):
         r = "<|assistant|>"
     return "You are a friendly assistant, who provides empathetic responses to the user. " \
             "The input contains previous turn of the dialog, where each utterance is prefaced " \
-            "with tags {}, or {}. Be empathetic and precise. Make sure to give " \
-            "responses that make dialogue flow. Avoid repeating the prompt.".format(l, r)
-
+            "with tags {}, or {}. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt. " \
+            "Please respond creatively and expressively to make the responses longer. You can offer advice."
+           # "responses that make dialogue flow. Avoid repeating the prompt and giving unsolicited advice. Make the responses short.".format(l, r)
 
 def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id:str=None,
                  hf_key_path=None, is_local=False, is_test=False,
-                 run_pref:str="", test_frac=1.0):
+                 run_pref:str="", test_frac=1.0, max_tokens=200):
     # HF login
     login(Path(hf_key_path).read_text().strip())
 
@@ -74,8 +74,6 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id:str=None,
             model = PeftModel.from_pretrained(model, adapter_id)
 
     # Init pipeline & sys message
-    pipee = pipeline("text-generation", model=model, tokenizer=tokenizer,
-                     max_new_tokens=200)
     sys_msg = get_gen_sys_msg(base_model_id if adapter_id is None else adapter_id)
 
     sl_time = 3
@@ -84,7 +82,8 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id:str=None,
 
     # Instantiate generation pipeline
     pipe_gen = pipeline("text-generation", model=model, tokenizer=tokenizer,
-                        max_new_tokens=200)
+                        max_new_tokens=max_tokens)
+    print(max_tokens)
     # Subset test if specified
     if is_test:
         test_df = test_df.head(50).copy()
@@ -119,7 +118,7 @@ def calc_metrics(save_to, output_dir_base, base_model_id, adapter_id:str=None,
     # Delete objects from mem
     del tokenizer
     del model
-    del pipee
+    del pipe_gen
     print(f"Sleeping for {sl_time}s...")
     time.sleep(sl_time)
     print("Done.")
@@ -134,7 +133,8 @@ def generate_predictions(args: argparse.Namespace) -> Dict:
                 f"{args.base_dir}/mmlu_x_all_{args.base_model.split('/')[1]}.txt",
                 args.base_dir, args.base_model, hf_key_path=args.hf_key_path,
                 is_local=args.is_local, is_test=args.is_test,
-                run_pref=args.run_pref, test_frac=args.test_frac)
+                run_pref=args.run_pref, test_frac=args.test_frac,
+                max_tokens=args.max_tokens)
     else:
         if args.is_local:
             pth = args.adapter
@@ -145,7 +145,8 @@ def generate_predictions(args: argparse.Namespace) -> Dict:
                 args.base_dir, args.base_model, adapter_id=args.adapter,
                 hf_key_path=args.hf_key_path, is_local=args.is_local,
                 is_test=args.is_test,
-                run_pref=args.run_pref, test_frac=args.test_frac)
+                run_pref=args.run_pref, test_frac=args.test_frac,
+                max_tokens=args.max_tokens)
     return ret
 
 
@@ -169,5 +170,6 @@ if __name__ == "__main__":
                         action=argparse.BooleanOptionalAction)
     parser.add_argument("-p", "--run_pref", default="x")
     parser.add_argument("-f", "--test_frac", default=1.0)
+    parser.add_argument("-m", "--max_tokens", default=201, type=int)
     res = generate_predictions(parser.parse_args())
     print(f"Saved {res['no_preds']} preds to: {res['path_preds']}")

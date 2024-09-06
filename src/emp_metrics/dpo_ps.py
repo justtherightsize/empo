@@ -35,10 +35,10 @@ def train_dpo(base_model_id, model_id, output_dir_base, new_name):
     tokenizer = AutoTokenizer.from_pretrained(output_dir)
 
     # load datasets
-    sys_msg = "You are a friendly assistant, who provides empathetic responses to the user. " \
+    sys_msg = "You are a friendly assistant, who provides empathetic responses to the user. The responses can be long and elaborate." \
               "The input contains previous turn of the dialog, where the each utterance is prefaced " \
               "with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give " \
-              "responses that make dialogue flow. Avoid repeating the prompt."
+              "responses that make dialogue flow. Avoid repeating the prompt. Give longer responses if they are more empathetic."
 
     train_dataset = get_ed_for_dpo("train", tokenizer, sys_msg=sys_msg,
                                    tokenize=False, add_generation_prompt=True)
