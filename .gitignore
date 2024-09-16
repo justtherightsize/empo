@@ -1,3 +1,7 @@
+data/empathy_datasets/empathetic_dialogues/outputs
+data/empathy_datasets/empathetic_dialogues/ngrams
+data/empo
+
 ignore
 
 scripts/**
