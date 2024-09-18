@@ -23,7 +23,9 @@ See also the model cards in huggingface.
 See *src.pipe_gen.py* for details on the result generation.
  
 ## Training
-See *src.pipe_sft.py* for details on SFT training and *src.pipe_dpo.py* for DPO training.
+The training pipeline involves wandb.ai hyperparameter sweeps. You have to be have the wandb package installed and logged in to train. 
+
+The training starts en *sr.pipe_arun.py*, which load the configuration from the *src.configs/* folder, such as dpo27.json. Then the script runs *src.pipe_sft.py* to train either SFT or DPO depending on the config file parameters.
 
 ## Evaluation
 Genrate predictions with *src.pipe_gen.py* then run the following metrics on the predictions. 
