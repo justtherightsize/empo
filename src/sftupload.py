@@ -8,7 +8,7 @@ from transformers import AutoTokenizer
 from peft import PeftModel, PeftConfig
 
 base_model_id = "alignment-handbook/zephyr-7b-sft-full"
-model_id = "zephyr-7b-sft-full122"
+model_id = "zephyr-7b-sft-full124_d270"
 output_dir_base = "./results/"
 output_dir = output_dir_base + model_id
 
@@ -30,6 +30,7 @@ model.resize_token_embeddings(len(tokenizer))
 config = PeftConfig.from_pretrained(output_dir)
 model = PeftModel.from_pretrained(model, output_dir)
 
+repo = "justtherightsize/"
 model.push_to_hub(model_id)
 tokenizer.push_to_hub(model_id)
 
