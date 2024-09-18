@@ -29,10 +29,18 @@ See *src.pipe_sft.py* for details on SFT training and *src.pipe_dpo.py* for DPO 
 Genrate predictions with *src.pipe_gen.py* then run the following metrics on the predictions. 
 
 ### diffEpitome and BERTscore
-Run *src.run_metrics_on_saved_df.py* on a csv dataframe with predictions.
+Run *src.run_metrics_on_saved_df.py* on a csv dataframe (preds_...) with predictions.
+```bash
+python ./src/run_metrics_on_saved_df.py -s -n preds_dlr1e6m1000_zephyr-7b-sft-full124_d270.txt -m bertscore epitome
+```
 
 ### MMLU and Open LLM leaderboard
-Get the lm_eval package fork from Huggingface and run task mmlu or leaderboard.
+Get the lm_eval package fork from Huggingface and run task *mmlu* or *leaderboard*. For instalation, follow https://huggingface.co/docs/leaderboards/en/open_llm_leaderboard/about#reproducibility
+```bash
+# This uses local folder for the models. Either download the models to the current folder 
+# or prepend justtherightsize/ to the models name to download it automatically.
+lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=zephyr-7b-sft-full124_d270,tokenizer=zephyr-7b-sft-full124_d270 --tasks=leaderboard --batch_size=auto --output_path=leader_zephyr-7b-sft-full124_d270.txt
+```
 
 ### Lee's empathy metrics
 **running on file -f**
