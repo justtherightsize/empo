@@ -10,7 +10,15 @@ DPO:
 https://huggingface.co/justtherightsize/zephyr-7b-sft-full124_d270
 
 ### Inference
-See also the model cards in huggingface.
+You can generate predictions using the *src.pipe_gen.py* script. See also the model cards in huggingface.
+```bash
+# -a: PEFT LoRA adapter to be used atop the base model (default: alignment-handbook/zephyr-7b-sft-full)
+# -l: use local models or download from HF hub
+# -p: save file name prefix
+# -k: path to text file with the key to your huggingface account
+# -m: max_tokens 
+python ./src/pipe_gen.py -a zephyr-7b-sft-full124 -l -p test1 -k <pth_to_key> -m 1000
+```
 
 **Standard System Prompt** for baseline, SFT, DPO:
 > You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|Assistant|>, or <|User|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt. Please respond creatively and expressively. You can offer advice. responses that make dialogue flow. Avoid repeating the prompt and giving unsolicited advice. Make the responses short.".format(l, r)
