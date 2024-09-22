@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- color pallete Okabe-Ito -->
+    <style>
+   html {
+        display: table;
+        margin: auto;
+    }
+    
+   body {
+        display: table-cell;
+        vertical-align: middle;
+        color: #000000;
+        font-family: "Helvetica", "Arial", sans-serif;
+        font-size: 16px;
+        text-align: justify;
+        vertical-align: middle;
+        padding-right: 10px;
+        padding-left: 10px;
+    } 
+    
+    speaker_hl {
+	color: #D55E00;  
+        font-weight: bold;
+     
+    }
+    
+    listener_hl {
+	color: #0072B2;
+        font-weight: bold;
+    }
+    
+    response_hl {
+    	color: #009E73;
+        font-weight: bold;
+    }
+    
+    instruction_hl {
+	color: grey;
+    }
+
+    .slider-container {
+	display: flex;
+    }  
+
+    .slider-container {
+	margin: 0px;
+	padding: 3px; 
+	font-size: 14px;
+    }
+</style>
+</head>
+<body>
+    <h3>Solved example</h3>
+	<div style="max-width:670px; word-wrap:break-word;">
+    	<instruction_hl> 
+    	    Hello and thank you for participating in this experiment. 
+	    <ol type="1">
+		    <li>  Your task is to rate the last <listener_hl>listener's</listener_hl> <response_hl> response</response_hl>. </li>
+		    <li> After reading the conversation, please use the sliding scale to indicate how much you agree with the following statements. </li>
+		    <li> Please provide the ratings in the order they are provided, changing the previous rating is discouraged. </li>
+
+	    </ol>
+	</instruction_hl>
+    </br> 
+    {% for item in he_cont %}
+       	{% if loop.index is divisibleby 2 %}
+            <listener_hl>Listener: </listener_hl>
+        {% else %}
+	    <speaker_hl>Speaker: </speaker_hl>
+      {% endif %}
+      <span>{{ item }}</span>
+      <br/>
+    {% endfor %}
+
+    <listener_hl>Listener</listener_hl> <response_hl> (Response):</response_hl> <span>{{ he_gen }}</span> 
+
+    
+    <br>
+    <br>
+    <br>
+    </div>
+    <form method="POST">
+	    <span>The <listener_hl>listener’s</listener_hl> <response_hl>response</response_hl> is appropriate to the <speaker_hl> speaker’s </speaker_hl> situation. </span>
+	    </div>
+
+	    <div class="slider-container">
+  	    <div>Strongly disagree</div>
+  		<div>
+	    		<input type="range" min="0" max="100" value="35" id="slider2" name="slider1" disabled/>	
+  		</div>	
+	    <div>Strongly agree</div>  
+	</div>
+    	</br>
+
+	<span>The <listener_hl>listener</listener_hl> adresses the <speaker_hl>speaker’s</speaker_hl> emotional state, specifically.</span>
+	<div class="slider-container">
+  		<div>Strongly disagree</div>
+  		<div>
+	    		<input type="range" min="0" max="100" value="75" id="slider2" name="slider2" disabled/>
+  		</div>	
+	    <div>Strongly agree</div>  
+	</div> 
+    	</br>
+	
+	<span>The <listener_hl>listener’s</listener_hl> <response_hl>response</response_hl> is completely natural in the context of this conversation. </span>
+	<div class="slider-container">
+  		<div>Strongly disagree</div>
+  		<div>
+	    		<input type="range" min="0" max="100" value="35" id="slider2" name="slider3" disabled/>
+  		</div>	
+	    <div>Strongly agree</div>  
+	</div> 
+    	</br>
+
+	<span>I would like to continue the conversation with this <listener_hl>listener.</listener_hl></span>
+	<div class="slider-container">
+  		<div>Strongly disagree</div>
+  		<div>
+	    		<input type="range" min="0" max="100" value="60" id="slider2" name="slider4" disabled/>
+  		</div>	
+	    <div>Strongly agree</div>  
+	</div> 
+    	</br>
+
+	<p> The <listener_hl>listener’s</listener_hl> responses were both understandable and consistent with the rest of the dialogue.
+	</p>
+	<input type="checkbox" id="checkbox" name="checkbox1" checked disabled>
+		</br></br>
+	</br></br>
+	<input type="submit" value="Next">
+	</div>
+	</div></div>	
+    </form>
+</body>
+</html>
+

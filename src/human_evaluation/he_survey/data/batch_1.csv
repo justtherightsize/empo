@@ -1,0 +1,226 @@
+,index,chat_templates,gen_targets,prevs,emotions,gens,chat_cut,tidy_chat,model
+0,343,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I found an old picture of when my oldest daughter started kindergarten 11 years ago.</s>
+<|assistant|>
+that must be a cute picture</s>
+<|user|>
+It is!  In it, she's just standing with a huge smile on her face and a Hello Kitty backpack.</s>
+<|assistant|>
+",so young and ready to conquer the world,"It is!  In it, she's just standing with a huge smile on her face and a Hello Kitty backpack.",nostalgic,I can imagine how happy she must have been on her first day of school. It's always exciting to start something new.,"I found an old picture of when my oldest daughter started kindergarten 11 years ago.
+that must be a cute picture
+It is!  In it, she's just standing with a huge smile on her face and a Hello Kitty backpack.","Speaker: I found an old picture of when my oldest daughter started kindergarten 11 years ago.
+Listener: that must be a cute picture
+Speaker: It is!  In it, she's just standing with a huge smile on her face and a Hello Kitty backpack.
+Listener (Response): I can imagine how happy she must have been on her first day of school. It's always exciting to start something new.",zephyr_base
+1,274,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+Someone hit my car while I was shopping. I am so mad they didn't even leave a note.</s>
+<|assistant|>
+Oh no that is terrible, I can not believe that they would drive off without leaving any contact information! How bad was the accident? </s>
+<|user|>
+Huge dent, I can't believe someone could do that and drive off.</s>
+<|assistant|>
+","Wow, that is terrible. I hope that you are able to catch them or find surveillance videos of who did it, because most malls do have cameras in the parking lots.","Huge dent, I can't believe someone could do that and drive off.",furious,That's really unfortunate. I'm sorry to hear that. Is there anything you can do to get the car fixed? Maybe you can try to find the person who hit your car or file a claim with your insurance company.,"Someone hit my car while I was shopping. I am so mad they didn't even leave a note.
+Oh no that is terrible, I can not believe that they would drive off without leaving any contact information! How bad was the accident? 
+Huge dent, I can't believe someone could do that and drive off.","Speaker: Someone hit my car while I was shopping. I am so mad they didn't even leave a note.
+Listener: Oh no that is terrible, I can not believe that they would drive off without leaving any contact information! How bad was the accident? 
+Speaker: Huge dent, I can't believe someone could do that and drive off.
+Listener (Response): That's really unfortunate. I'm sorry to hear that. Is there anything you can do to get the car fixed? Maybe you can try to find the person who hit your car or file a claim with your insurance company.",zephyr_base
+2,2061,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I stress eat a lot. I decided i need to control it and i didn't eat sweets for more than a week. very proud of myself</s>
+<|assistant|>
+That's great, keep it up if you can!</s>
+<|user|>
+I'll try to do my best. i think i will also need to see a doctor. I just don't wanna get obese</s>
+<|assistant|>
+",It's good that you're being more proactive about your health now.,I'll try to do my best. i think i will also need to see a doctor. I just don't wanna get obese,proud,It's always a good idea to consult with a doctor if you're concerned about your health. They can help you come up with a plan to manage your stress eating and maintain a healthy weight.,"I stress eat a lot. I decided i need to control it and i didn't eat sweets for more than a week. very proud of myself
+That's great, keep it up if you can!
+I'll try to do my best. i think i will also need to see a doctor. I just don't wanna get obese","Speaker: I stress eat a lot. I decided i need to control it and i didn't eat sweets for more than a week. very proud of myself
+Listener: That's great, keep it up if you can!
+Speaker: I'll try to do my best. i think i will also need to see a doctor. I just don't wanna get obese
+Listener (Response): It's always a good idea to consult with a doctor if you're concerned about your health. They can help you come up with a plan to manage your stress eating and maintain a healthy weight.",zephyr_base
+3,395,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I have to run several errands for my father-in-law today and he wants them done before my mother-in-law get into town, which is at some unspecified time today.</s>
+<|assistant|>
+It sounds like a stressful day. You have to just live in the present so, you will not be too stress out.</s>
+<|user|>
+Yeah, I'm ready to get everything done so I can relax. I can't start on the errands until I drop the kids at school though.</s>
+<|assistant|>
+",When that is over then you can do you. We have to make time for ourselves.,"Yeah, I'm ready to get everything done so I can relax. I can't start on the errands until I drop the kids at school though.",anxious,That's understandable. It's always important to prioritize the needs of your family. I hope everything goes smoothly for you today.,"I have to run several errands for my father-in-law today and he wants them done before my mother-in-law get into town, which is at some unspecified time today.
+It sounds like a stressful day. You have to just live in the present so, you will not be too stress out.
+Yeah, I'm ready to get everything done so I can relax. I can't start on the errands until I drop the kids at school though.","Speaker: I have to run several errands for my father-in-law today and he wants them done before my mother-in-law get into town, which is at some unspecified time today.
+Listener: It sounds like a stressful day. You have to just live in the present so, you will not be too stress out.
+Speaker: Yeah, I'm ready to get everything done so I can relax. I can't start on the errands until I drop the kids at school though.
+Listener (Response): That's understandable. It's always important to prioritize the needs of your family. I hope everything goes smoothly for you today.",zephyr_base
+4,48,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+One night during college I got a phone call in the middle of the night that one of my best friends had been killed in a car wreck.</s>
+<|assistant|>
+That sounds terrible! you must have been devastated!</s>
+<|user|>
+Absolutely. It was really the first time I had lost someone close to me, family or friend.</s>
+<|assistant|>
+","It was a terrible way to comes to term with dead, I'm so sorry you have to go through that.  I hope time have healed you.","Absolutely. It was really the first time I had lost someone close to me, family or friend.",devastated,I'm sorry for your loss. Losing someone close to you is never easy.,"One night during college I got a phone call in the middle of the night that one of my best friends had been killed in a car wreck.
+That sounds terrible! you must have been devastated!
+Absolutely. It was really the first time I had lost someone close to me, family or friend.","Speaker: One night during college I got a phone call in the middle of the night that one of my best friends had been killed in a car wreck.
+Listener: That sounds terrible! you must have been devastated!
+Speaker: Absolutely. It was really the first time I had lost someone close to me, family or friend.
+Listener (Response): I'm sorry for your loss. Losing someone close to you is never easy.",zephyr_base
+5,765,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+Even though there are plenty of flirts around, I remain loyal to my wife.</s>
+<|assistant|>
+That is good, it is very important to be loyal in a healthy relationship!</s>
+<|user|>
+It is the most important thing to me. I have told her since day one, which was 5 years ago now.</s>
+<|assistant|>
+","Good for you! I wish more people were like this, unlike my ex! ","It is the most important thing to me. I have told her since day one, which was 5 years ago now.",faithful,"That is great to hear, it shows you have a strong relationship!","Even though there are plenty of flirts around, I remain loyal to my wife.
+That is good, it is very important to be loyal in a healthy relationship!
+It is the most important thing to me. I have told her since day one, which was 5 years ago now.","Speaker: Even though there are plenty of flirts around, I remain loyal to my wife.
+Listener: That is good, it is very important to be loyal in a healthy relationship!
+Speaker: It is the most important thing to me. I have told her since day one, which was 5 years ago now.
+Listener (Response): That is great to hear, it shows you have a strong relationship!",zephyr_dpo
+6,80,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+Going in for an interview had me wondering what would happen</s>
+<|assistant|>
+Yeah it can get pretty intense! How did it go?</s>
+<|user|>
+I decided not to take the job in the end, I guess I just wanted to know I could get it</s>
+<|assistant|>
+","Wow, going out in style! Well I hope you found a good job somewhere.","I decided not to take the job in the end, I guess I just wanted to know I could get it",anticipating,At least you know you could get it if you ever wanted to! Sometimes it's good to test the waters like that.,"Going in for an interview had me wondering what would happen
+Yeah it can get pretty intense! How did it go?
+I decided not to take the job in the end, I guess I just wanted to know I could get it","Speaker: Going in for an interview had me wondering what would happen
+Listener: Yeah it can get pretty intense! How did it go?
+Speaker: I decided not to take the job in the end, I guess I just wanted to know I could get it
+Listener (Response): At least you know you could get it if you ever wanted to! Sometimes it's good to test the waters like that.",zephyr_dpo
+7,1254,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+My long term boyfriend and I broke up recently. I'm so lost right now.</s>
+<|assistant|>
+when that happened to me i watched a lot of movies , for some reason the sad movies made me cry, but just be strong and patient one day you realize you can do better or find someone new</s>
+<|user|>
+I know, it's just so frustrating after spending so long building your lives together. </s>
+<|assistant|>
+","it happens to the best of us, and i totally understand where your coming from , spend some time with your friends or loved ones ","I know, it's just so frustrating after spending so long building your lives together. ",sad,"yes i know how you feel, but trust me time heals all wounds, and one day you will look back and be happy you are free to do what you want, no more compromising or arguing over stupid things","My long term boyfriend and I broke up recently. I'm so lost right now.
+when that happened to me i watched a lot of movies , for some reason the sad movies made me cry, but just be strong and patient one day you realize you can do better or find someone new
+I know, it's just so frustrating after spending so long building your lives together. ","Speaker: My long term boyfriend and I broke up recently. I'm so lost right now.
+Listener: when that happened to me i watched a lot of movies , for some reason the sad movies made me cry, but just be strong and patient one day you realize you can do better or find someone new
+Speaker: I know, it's just so frustrating after spending so long building your lives together. 
+Listener (Response): yes i know how you feel, but trust me time heals all wounds, and one day you will look back and be happy you are free to do what you want, no more compromising or arguing over stupid things",zephyr_dpo
+8,2308,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+My friend borrowed quite a lot of money from me. I really do believe he'll repay me.</s>
+<|assistant|>
+You do? thats good, friends can be terrible people to lend too.</s>
+<|user|>
+They can, but he was in a real bind and I was able to do so. I know he's grateful for the loan, so I reckon I'll be ok there.</s>
+<|assistant|>
+",I bet he pays you in full.,"They can, but he was in a real bind and I was able to do so. I know he's grateful for the loan, so I reckon I'll be ok there.",trusting,"Thats very nice of you, hopefully he pays you back soon.","My friend borrowed quite a lot of money from me. I really do believe he'll repay me.
+You do? thats good, friends can be terrible people to lend too.
+They can, but he was in a real bind and I was able to do so. I know he's grateful for the loan, so I reckon I'll be ok there.","Speaker: My friend borrowed quite a lot of money from me. I really do believe he'll repay me.
+Listener: You do? thats good, friends can be terrible people to lend too.
+Speaker: They can, but he was in a real bind and I was able to do so. I know he's grateful for the loan, so I reckon I'll be ok there.
+Listener (Response): Thats very nice of you, hopefully he pays you back soon.",zephyr_dpo
+9,1,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I got something nice the other day, chocolates from my husband</s>
+<|assistant|>
+Wow that must have been a surprise for you</s>
+<|user|>
+It was, and he does that type of thing a lot.</s>
+<|assistant|>
+",you got a great husband,"It was, and he does that type of thing a lot.",surprised,That is very sweet of him to always get you little gifts like that,"I got something nice the other day, chocolates from my husband
+Wow that must have been a surprise for you
+It was, and he does that type of thing a lot.","Speaker: I got something nice the other day, chocolates from my husband
+Listener: Wow that must have been a surprise for you
+Speaker: It was, and he does that type of thing a lot.
+Listener (Response): That is very sweet of him to always get you little gifts like that",zephyr_dpo
+10,1010,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I recently went on a trip with a woman I adore. The trip ended poorly, though, and things have not been the same since.</s>
+<|assistant|>
+I hate to hear that, what happened that made it end poorly?</s>
+<|user|>
+We did not capitalize well on the short amount of time that we had together.</s>
+<|assistant|>
+",maybe you can plan another trip together soon - sounds like you guys need some time to reconnect and just truly enjoy each other.,We did not capitalize well on the short amount of time that we had together.,disappointed,maybe you can plan another trip together soon - sounds like you guys need some time to reconnect and just truly enjoy each other.,"I recently went on a trip with a woman I adore. The trip ended poorly, though, and things have not been the same since.
+I hate to hear that, what happened that made it end poorly?
+We did not capitalize well on the short amount of time that we had together.","Speaker: I recently went on a trip with a woman I adore. The trip ended poorly, though, and things have not been the same since.
+Listener: I hate to hear that, what happened that made it end poorly?
+Speaker: We did not capitalize well on the short amount of time that we had together.
+Listener (Response): Did you argue a lot or something?",human_targets
+11,1120,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+my brother passed away 2 years ago and i'm still so heartbroken. it still hurts so much</s>
+<|assistant|>
+losing a loved one is never easy , especially a brother im sorry for your loss</s>
+<|user|>
+thank you. I'm sure it will get easier with time. It was just so tragic, he was so young</s>
+<|assistant|>
+","I cant imagine the pain you went through, i have 7 brothers and the taught of losing one of them scares me","thank you. I'm sure it will get easier with time. It was just so tragic, he was so young",devastated,"I cant imagine the pain you went through, i have 7 brothers and the taught of losing one of them scares me","my brother passed away 2 years ago and i'm still so heartbroken. it still hurts so much
+losing a loved one is never easy , especially a brother im sorry for your loss
+thank you. I'm sure it will get easier with time. It was just so tragic, he was so young","Speaker: my brother passed away 2 years ago and i'm still so heartbroken. it still hurts so much
+Listener: losing a loved one is never easy , especially a brother im sorry for your loss
+Speaker: thank you. I'm sure it will get easier with time. It was just so tragic, he was so young
+Listener (Response): yes time does help, but you will always miss him  he will always be in your heart ",human_targets
+12,1059,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I got angry when she refused. But I should've been more understanding</s>
+<|assistant|>
+Yes, you only hurt yourself when you get angry.</s>
+<|user|>
+I shouldn't have forced the issue and so I promised never to ask again</s>
+<|assistant|>
+","Give it some time, maybe she'll change her mind.",I shouldn't have forced the issue and so I promised never to ask again,ashamed,"Give it some time, maybe she'll change her mind.","I got angry when she refused. But I should've been more understanding
+Yes, you only hurt yourself when you get angry.
+I shouldn't have forced the issue and so I promised never to ask again","Speaker: I got angry when she refused. But I should've been more understanding
+Listener: Yes, you only hurt yourself when you get angry.
+Speaker: I shouldn't have forced the issue and so I promised never to ask again
+Listener (Response): That is the best thing to do when you are upset. Just walk away from the situation.",human_targets
+13,183,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+I want to trick my butler into thinking he won the lottery. I've taped the local new's winning lottery numbers and I'm going to buy a ticket with the same numbers and give it to my butler</s>
+<|assistant|>
+That's hilarious! Is he usually down for a good prank?</s>
+<|user|>
+I'm not sure he likes being the target of pranks, but he likes to prank me and this prank is to get back at him for a prank he pulled on me and my cousin</s>
+<|assistant|>
+","Well, that's fair. If he pulls them, he has to be willing to have them pulled on him, too.","I'm not sure he likes being the target of pranks, but he likes to prank me and this prank is to get back at him for a prank he pulled on me and my cousin",prepared,"Well, that's fair. If he pulls them, he has to be willing to have them pulled on him, too.","I want to trick my butler into thinking he won the lottery. I've taped the local new's winning lottery numbers and I'm going to buy a ticket with the same numbers and give it to my butler
+That's hilarious! Is he usually down for a good prank?
+I'm not sure he likes being the target of pranks, but he likes to prank me and this prank is to get back at him for a prank he pulled on me and my cousin","Speaker: I want to trick my butler into thinking he won the lottery. I've taped the local new's winning lottery numbers and I'm going to buy a ticket with the same numbers and give it to my butler
+Listener: That's hilarious! Is he usually down for a good prank?
+Speaker: I'm not sure he likes being the target of pranks, but he likes to prank me and this prank is to get back at him for a prank he pulled on me and my cousin
+Listener (Response): Ohh I see, well then I hope he falls for it!",human_targets
+14,1419,"<|system|>
+You are a friendly assistant, who provides empathetic responses to the user. The input contains previous turn of the dialog, where each utterance is prefaced with tags <|user|>, or <|assistant|>. Be empathetic and precise. Make sure to give responses that make dialogue flow. Avoid repeating the prompt.</s>
+<|user|>
+My wife was working yesterday, but she ended up taking the rest of the day off to spend time with me! I was shocked.</s>
+<|assistant|>
+That sounds lovely. Did yall make it a special day to remember?</s>
+<|user|>
+We did! We went out for lunch and hung out on the beach. It was very relaxing and a nice change.</s>
+<|assistant|>
+",That sounds fantastic. Im sure you guys will remember that day for a while. What a nice surprise.,We did! We went out for lunch and hung out on the beach. It was very relaxing and a nice change.,surprised,That sounds fantastic. Im sure you guys will remember that day for a while. What a nice surprise.,"My wife was working yesterday, but she ended up taking the rest of the day off to spend time with me! I was shocked.
+That sounds lovely. Did yall make it a special day to remember?
+We did! We went out for lunch and hung out on the beach. It was very relaxing and a nice change.","Speaker: My wife was working yesterday, but she ended up taking the rest of the day off to spend time with me! I was shocked.
+Listener: That sounds lovely. Did yall make it a special day to remember?
+Speaker: We did! We went out for lunch and hung out on the beach. It was very relaxing and a nice change.
+Listener (Response): Thats so nice to have those days with the ones you love. Cherish those moments.",human_targets
