@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmPO Human Eval</title>
+    <style>
+     html {
+        display: table;
+        margin: auto;
+    }
+    body {
+        display: table-cell;
+        vertical-align: middle;
+        color: #0000000;
+        font-family: "Helvetica", "Arial", sans-serif;
+        font-size: 16px;
+        text-align: justify;
+        vertical-align: middle;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    speaker_hl {
+	color: red;
+    }
+    listener_hl {
+	color: blue;
+    }
+    response_hl {
+    	color: green;
+    }
+    .slider-container {
+	display: flex;
+    }  
+
+    .slider-container {
+	margin: 0px;
+	padding: 3px; 
+	font-size: 14px;
+    }
+</style>
+</head>
+<body>
+    <h1>EmPo</h1>
+    <h2>Human evaluation of artificial conversations </h2>
+    <div style="max-width:670px; word-wrap:break-word;">
+    	<i>
+    		Thank you again for participating in the study. 
+		If you have any questions or suggestions regarding the it and the research, please write to us at xforman@mail.muni.cz
+	</i>
+    
+    </br>
+    </br>
+    <!-- <form action="https://app.prolific.com/submissions/complete?cc={{ spec_data }}">
+        <input type="submit" value="Exit the experiment" />
+    </form> --> 
+     <button onclick="window.location='https://app.prolific.com/submissions/complete?cc={{ spec_data }}';">
+    	Exit the experiment
+     </button> 
+    </div>
+</body>
+</html>
+

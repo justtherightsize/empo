@@ -136,6 +136,12 @@ python src/emp_metrics/run_empathy_eval.py -f data/empo/preds_dlr1e6_zephyr-7b-s
 * Pass in the flag -hu, and -f followed by the path of any of the files containing the human responses in the column "gen_targets"
 * Results are saved at "data/results/empathy_eval_results/human_[metric].txt"
 
-
-
+### Human evaluation
+* The data from the evaluation itself are present in data/human\_valuation/he\_data.csv
+* The evaluation evaluation scripts for effect sizes and final score in
+notebooks/he\_score\_effsize.ipynb
+The data for the human evaluation were preprocessed into batches, which were then served to the
+annotators.
+* Preprocessing scripts present in src/human\_evaluation/he\_data\_prep.py and data in
+data/generated\_text
 

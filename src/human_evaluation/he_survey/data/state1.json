@@ -1,0 +1,33 @@
+{
+    "page_n": 0,
+    "show_intro": true,
+    "batch_size": 15,
+    "slider_value": 50,
+    "he_data_path": "data/batch_1.csv",
+    "header_1": "Sample {}",
+    "questions": {
+        "1": "The listener\u2019s response is appropriate to the speaker\u2019s situation.",
+        "2": "The listener\u2019s response addresses the speaker\u2019s emotional state, specifically.",
+        "3": "The listener's response is completely natural in the context of this conversation.",
+        "4": "I would like to continue the conversation with this listener.",
+        "5": "The listener\u2019s responses were both understandable and consistent with the rest of the dialogue."
+    },
+    "slider_vals": {
+    },
+    "default_conv": {
+        "context": [
+            "my boyfriend is sick. he can not eat much so i made some soup for him",
+            "you are sweet , what kind of soup did you make him?",
+            "i made chicken noodle soup"
+        ],
+        "resp": "i love chicken noodle, he must be so grateful"
+    },
+    "solved_example": {
+        "context": [
+            "I recently went to the pool and lost my suit. My trunks were in the water without me!",
+            "Oh my! I hope you were the only one there! otherwise that would have been scary!",
+            "I was not, unfortunately. People saw everything!"
+        ],
+        "resp": "I'm sorry to hear that. Losing your trunks in the pool can be embarrassing, but at least you can laugh about it now. Have you found your trunks yet?"
+    }
+}
