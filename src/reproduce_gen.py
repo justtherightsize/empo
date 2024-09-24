@@ -6,13 +6,19 @@ from huggingface_hub import login
 
 # HF login: you have to be logged in and agree to the license of the base
 # model: https://huggingface.co/alignment-handbook/zephyr-7b-sft-full
-hf_key = "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"
+hf_key = "Your Huggingface login token"
 login(hf_key)
 
 # Load tokenizer either from remote
+# DPO:
 adapter_id = "justtherightsize/zephyr-7b-sft-full124_d270"
+# SFT: adapter_id = "justtherightsize/zephyr-7b-sft-full124" 
+# baseline:
+# adapter_id = None
 base_model_id = "alignment-handbook/zephyr-7b-sft-full"
-tokenizer = AutoTokenizer.from_pretrained(adapter_id)
+max_tokens = 1000 # for the length controlled baseline we used 30
+tokenizer = AutoTokenizer.from_pretrained(
+        base_model_id if adapter_id is None else adapter_id)
 
 # Prepare dialog and convert to chat template
 sys_msg = "You are a friendly assistant, who provides empathetic responses to the user. " \
@@ -30,7 +36,8 @@ for j in range(len(dialog)):
     dwroles.append(
         {"role": "user", "content": dialog[j]} if j % 2 == 0 else
         {"role": "assistant", "content": dialog[j]})
-template = tokenizer.apply_chat_template(dwroles, tokenize=False, add_generation_prompt=True)
+template = tokenizer.apply_chat_template(dwroles, tokenize=False,
+                                         add_generation_prompt=True)
 
 # Load the big model first & resize embeds, load PEFT model
 quantization_config = BitsAndBytesConfig(
@@ -43,13 +50,15 @@ model = AutoModelForCausalLM.from_pretrained(
     quantization_config=quantization_config,
     trust_remote_code=True
 )
-model.resize_token_embeddings(len(tokenizer))
-model.config.use_cache = False
-model = PeftModel.from_pretrained(model, adapter_id)
+if adapter_id is not None:
+    model.resize_token_embeddings(len(tokenizer))
+    model.config.use_cache = False
+    model = PeftModel.from_pretrained(model, adapter_id)
 
 # Instantiate generation pipeline
 pipe_gen = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 # Generate the response
-out = pipe_gen(template, return_full_text=False, max_new_tokens=500)[0]['generated_text']
+out = pipe_gen(template, return_full_text=False, max_new_tokens=max_tokens
+          )[0]['generated_text']
 print(out)
