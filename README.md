@@ -111,8 +111,8 @@ The training starts en *src.pipe_arun.py*, which load the configuration from the
 python ./src/pipe_arun.py -sa dpo32 -ss 4
 ```
 
-## Evaluation
-Genrate predictions with *src.pipe_gen.py* then run the following metrics on the predictions. 
+## Evaluation: Reproducing results
+The script *src.pipe_gen.py* generates a pandas dataframe with the predictions for the entire test set (seel also section *Inference*). Empathy metrics can be measured on these predictions (saved as .csv with sep=*~*) or their subset. The predictions are also prepared in the **predictions** folder. The exception are the Language Understanding benchmarks, which are run on the models themselves.
 
 ### diffEpitome and BERTscore
 Run *src.run_metrics_on_saved_df.py* on a csv dataframe (preds_...) with predictions.
@@ -121,22 +121,35 @@ python ./src/run_metrics_on_saved_df.py -s -n preds_dlr1e6m1000_zephyr-7b-sft-fu
 ```
 
 ### MMLU and Open LLM leaderboard
-Get the lm_eval package fork from Huggingface and run task *mmlu* or *leaderboard*. For instalation, follow https://huggingface.co/docs/leaderboards/en/open_llm_leaderboard/about#reproducibility
+Get the lm_eval package fork from Huggingface and run with parameter task=*mmlu* or task=*leaderboard*. For instalation, follow https://huggingface.co/docs/leaderboards/en/open_llm_leaderboard/about#reproducibility . Then go to the directory of the benchmark:
 ```bash
-# This uses local folder for the models. Either download the models to the current folder 
-# or prepend justtherightsize/ to the models name to download it automatically.
-lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=zephyr-7b-sft-full124_d270,tokenizer=zephyr-7b-sft-full124_d270 --tasks=leaderboard --batch_size=auto --output_path=leader_zephyr-7b-sft-full124_d270.txt
+cd lm-evaluation-harness
+```
+```bash
+# Run Open LLM Leaderboard benchmark for baseline:
+# This automatically downloads the models from Huggingface to .cache  
+lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True --tasks=leaderboard --batch_size=auto --num_fewshot 5 --output_path=leader_zephyr-7b-sft.txt
+```
+```bash
+# Run Open LLM Leaderboard benchmark for SFT:
+# This automatically downloads the models from Huggingface to .cache  
+lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=justtherightsize/zephyr-7b-sft-full124,tokenizer=justtherightsize/zephyr-7b-sft-full124 --tasks=leaderboard --batch_size=auto --num_fewshot 5 --output_path=leader_zephyr-7b-sft-full124.txt
+```
+```bash
+# Run Open LLM Leaderboard benchmark for DPO:
+# This automatically downloads the models from Huggingface to .cache  
+lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=justtherightsize/zephyr-7b-sft-full124_d270,tokenizer=justtherightsize/zephyr-7b-sft-full124_d270 --tasks=leaderboard --batch_size=auto ---num_fewshot 5 -output_path=leader_zephyr-7b-sft-full124_d270.txt
 ```
 
 ### Lee's empathy metrics
 **running on file -f**
 - Results are saved in data/results/empathy_eval_results by default, with path "data/results/empathy_eval_results/[filename]_[metric].txt"
 ```bash
+export PYTHONPATH="."
 #vad metrics
-python src/emp_metrics/run_empathy_eval.py -f data/empo/preds_dlr1e6_zephyr-7b-sft-full122_d211.txt -m vad 
+python src/emp_metrics/run_empathy_eval.py -f predictions/preds_dlr1e6m1000_zephyr-7b-sft-full124_d270_epi.txt -m vad 
 # specificity metrics
-python src/emp_metrics/run_empathy_eval.py -f data/empo/preds_dlr1e6_zephyr-7b-sft-full122_d211.txt -m nidf
-
+python src/emp_metrics/run_empathy_eval.py -f predictions/preds_dlr1e6m1000_zephyr-7b-sft-full124_d270_epi.txt-m nidf
 ```
 
 **running on human data**
