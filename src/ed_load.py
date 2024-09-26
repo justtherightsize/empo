@@ -9,7 +9,7 @@ from transformers import AutoTokenizer
 # offline ED
 # ED_PTH = 'data/empathy_datasets/empathetic_dialogues'
 # df = pd.read_csv(Path(ED_PTH, 'test.csv'))
-from src.emp_metrics.emotions import get_opposite_ed_keys
+from src.emotions import get_opposite_ed_keys
 
 
 def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str],

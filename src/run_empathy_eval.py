@@ -27,11 +27,11 @@ def calc_metrics(pth, model_id, metrics: List[str], run_pref: str = ""):
     res = {}
 
     if "epitome" in metrics:     # Calculate EPITOME, DIFF-EPITOME metrics
-        from src.emp_metrics.diff_epitome import EmpathyScorer, \
+        from src.diff_epitome import EmpathyScorer, \
                 to_epi_format, get_epitome_score, avg_epitome_score
         opt = {'no_cuda': False}
         device = 0
-        opt['epitome_save_dir'] = "src/emp_metrics/checkpoints/epitome_checkpoint"
+        opt['epitome_save_dir'] = "src/checkpoints/epitome_checkpoint"
         epitome_empathy_scorer = EmpathyScorer(opt, batch_size=1,
                                                cuda_device=device)
         epi_in = to_epi_format(test_df["prevs"].to_list(),

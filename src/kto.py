@@ -4,7 +4,7 @@ import wandb
 from peft import LoraConfig, PeftModel
 from alignment import DPOConfig
 from trl import DPOTrainer
-from src.emp_metrics.ed_load import get_ed_for_dpo
+from src.ed_load import get_ed_for_dpo
 from huggingface_hub import login
 from pathlib import Path
 from transformers import AutoTokenizer, BitsAndBytesConfig, AutoModelForCausalLM

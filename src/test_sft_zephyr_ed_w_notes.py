@@ -5,7 +5,7 @@ from accelerate import PartialState
 # settings for telamon
 from tokenizers import AddedToken
 
-from src.emp_metrics.ed_load import get_ed, get_ed_chats
+from src.ed_load import get_ed, get_ed_chats
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"

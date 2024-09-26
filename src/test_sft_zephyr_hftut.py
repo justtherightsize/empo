@@ -4,7 +4,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from datasets import load_dataset, Dataset
 from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 
-from src.emp_metrics.ed_load import get_ed, get_ed_chats
+from src.ed_load import get_ed, get_ed_chats
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"

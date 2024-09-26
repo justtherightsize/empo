@@ -7,10 +7,10 @@ import torch.nn.functional as F
 from transformers import GPT2Model
 from transformers import AutoModelWithLMHead, AutoTokenizer
 
-from src.emp_metrics.from_epitome.roberta import RobertaForTokenClassification, RobertaModel
-from src.emp_metrics.from_epitome.modeling_bert import BertEmbeddings, BertLayerNorm, BertModel, BertPreTrainedModel, gelu
-from src.emp_metrics.from_epitome.configuration_roberta import RobertaConfig
-from src.emp_metrics.from_epitome.file_utils import add_start_docstrings, add_start_docstrings_to_callable
+from src.from_epitome.roberta import RobertaForTokenClassification, RobertaModel
+from src.from_epitome.modeling_bert import BertEmbeddings, BertLayerNorm, BertModel, BertPreTrainedModel, gelu
+from src.from_epitome.configuration_roberta import RobertaConfig
+from src.from_epitome.file_utils import add_start_docstrings, add_start_docstrings_to_callable
 
 
 ROBERTA_PRETRAINED_MODEL_ARCHIVE_MAP = {

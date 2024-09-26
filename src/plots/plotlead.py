@@ -1,5 +1,5 @@
 from typing import List, Dict, Tuple
-from src.emp_metrics.plots.leaderld import load_openllm_leaderboard
+from src.plots.leaderld import load_openllm_leaderboard
 import numpy as np
 import pprint
 import matplotlib.pyplot as plt
@@ -32,8 +32,8 @@ def get_leaderboard_data(is_test=False, prnt=False):
 
     if is_test:
         results_dir = "."
-        pths = {100: ["src/emp_metrics/plots/test1.json",
-                      "src/emp_metrics/plots/test2.json"]}
+        pths = {100: ["src/plots/test1.json",
+                      "src/plots/test2.json"]}
 
     # Pivot the records: create a list of values for each metric. Repeat for each key.
     avgs = {}

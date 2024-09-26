@@ -14,8 +14,8 @@ from transformers import AutoTokenizer
 import wandb
 wandb.init(mode="disabled")
 from mmlu_all import run_mmlu
-from src.emp_metrics.dpo_ps import train_dpo
-from src.emp_metrics.run_metrics_on_saved_df import calc_metrics
+from src.dpo_ps import train_dpo
+from src.run_metrics_on_saved_df import calc_metrics
 import json
 
 
@@ -226,7 +226,7 @@ class DtO:
 
 
 def main(args: argparse.Namespace) -> None:
-    with open("./src/emp_metrics/configs/" + args.sft_args + ".json") as f:
+    with open("./src/configs/" + args.sft_args + ".json") as f:
         sweep_config_sft = json.load(f)
     
     cfg = DtO(sweep_config_sft["parameters"])

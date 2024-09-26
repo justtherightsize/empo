@@ -22,10 +22,10 @@ import torch
 import torch.nn as nn
 from torch.nn import CrossEntropyLoss, MSELoss
 
-from src.emp_metrics.from_epitome.configuration_roberta import RobertaConfig
-from src.emp_metrics.from_epitome.file_utils import add_start_docstrings, add_start_docstrings_to_callable
-from src.emp_metrics.from_epitome.modeling_bert import BertEmbeddings, BertLayerNorm, BertModel, BertPreTrainedModel, gelu
-from src.emp_metrics.from_epitome.modeling_utils import create_position_ids_from_input_ids
+from src.from_epitome.configuration_roberta import RobertaConfig
+from src.from_epitome.file_utils import add_start_docstrings, add_start_docstrings_to_callable
+from src.from_epitome.modeling_bert import BertEmbeddings, BertLayerNorm, BertModel, BertPreTrainedModel, gelu
+from src.from_epitome.modeling_utils import create_position_ids_from_input_ids
 
 
 logger = logging.getLogger(__name__)

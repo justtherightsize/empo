@@ -18,7 +18,7 @@
 
 import logging
 
-from src.emp_metrics.from_epitome.configuration_utils import PretrainedConfig
+from src.from_epitome.configuration_utils import PretrainedConfig
 
 logger = logging.getLogger(__name__)
 

@@ -5,9 +5,9 @@ import pandas as pd
 import wandb
 from tqdm import tqdm
 
-from src.emp_metrics.diff_epitome import EmpathyScorer, to_epi_format, get_epitome_score, \
+from src.diff_epitome import EmpathyScorer, to_epi_format, get_epitome_score, \
     avg_epitome_score
-from src.emp_metrics.ed_load import get_ed_chats, get_ed_for_generation
+from src.ed_load import get_ed_chats, get_ed_for_generation
 
 TEST = False
 if TEST:

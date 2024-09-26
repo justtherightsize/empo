@@ -24,10 +24,10 @@ import torch
 from torch import nn
 from torch.nn import CrossEntropyLoss, MSELoss
 
-from src.emp_metrics.from_epitome.activations import gelu, gelu_new, swish
-from src.emp_metrics.from_epitome.configuration_bert import BertConfig
-from src.emp_metrics.from_epitome.file_utils import add_start_docstrings, add_start_docstrings_to_callable
-from src.emp_metrics.from_epitome.modeling_utils import PreTrainedModel, prune_linear_layer
+from src.from_epitome.activations import gelu, gelu_new, swish
+from src.from_epitome.configuration_bert import BertConfig
+from src.from_epitome.file_utils import add_start_docstrings, add_start_docstrings_to_callable
+from src.from_epitome.modeling_utils import PreTrainedModel, prune_linear_layer
 
 
 logger = logging.getLogger(__name__)

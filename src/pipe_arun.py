@@ -3,11 +3,11 @@ import json
 from functools import partial
 
 import wandb
-from src.emp_metrics.pipe_sft import run_sft
+from src.pipe_sft import run_sft
 
 
 def main(args: argparse.Namespace) -> None:
-    with open("./src/emp_metrics/configs/" + args.sft_args + ".json") as f:
+    with open("./src/configs/" + args.sft_args + ".json") as f:
         sweep_config_sft = json.load(f)
     sweep_id = wandb.sweep(sweep_config_sft, project='erg')
     wandb.agent(sweep_id, run_sft, count=int(args.sft_sweeps))

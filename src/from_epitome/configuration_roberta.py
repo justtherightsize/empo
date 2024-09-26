@@ -18,7 +18,7 @@
 
 import logging
 
-from src.emp_metrics.from_epitome.configuration_bert import BertConfig
+from src.from_epitome.configuration_bert import BertConfig
 
 logger = logging.getLogger(__name__)
 

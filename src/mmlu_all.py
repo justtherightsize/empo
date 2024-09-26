@@ -5,7 +5,7 @@ import re
 import time
 from typing import Dict
 import wandb
-from src.emp_metrics.ed_load import get_ed_for_generation
+from src.ed_load import get_ed_for_generation
 from peft import PeftModel
 from deepeval.models import DeepEvalBaseLLM
 from transformers import BitsAndBytesConfig, AutoModelForCausalLM, AutoTokenizer, pipeline, \

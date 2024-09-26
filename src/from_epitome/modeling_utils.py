@@ -24,9 +24,9 @@ from torch import Tensor, device, dtype, nn
 from torch.nn import CrossEntropyLoss
 from torch.nn import functional as F
 
-from src.emp_metrics.from_epitome.activations import get_activation
-from src.emp_metrics.from_epitome.configuration_utils import PretrainedConfig
-from src.emp_metrics.from_epitome.file_utils import (
+from src.from_epitome.activations import get_activation
+from src.from_epitome.configuration_utils import PretrainedConfig
+from src.from_epitome.file_utils import (
     DUMMY_INPUTS,
     TF2_WEIGHTS_NAME,
     TF_WEIGHTS_NAME,

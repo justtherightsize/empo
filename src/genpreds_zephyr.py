@@ -7,7 +7,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 import argparse
 from tqdm import tqdm
-from src.emp_metrics.ed_load import get_ed_for_generation
+from src.ed_load import get_ed_for_generation
 import torch
 from transformers import AutoModelForCausalLM, BitsAndBytesConfig, pipeline
 from transformers import AutoTokenizer

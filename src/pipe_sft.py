@@ -13,8 +13,8 @@ from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer
 import wandb
 from mmlu_all import run_mmlu
-from src.emp_metrics.dpo_ps import train_dpo
-from src.emp_metrics.run_metrics_on_saved_df import calc_metrics
+from src.dpo_ps import train_dpo
+from src.run_metrics_on_saved_df import calc_metrics
 
 
 def load_preprocess_ed(split: str = "test") -> Tuple[pd.DataFrame, List[str], List[str]]:

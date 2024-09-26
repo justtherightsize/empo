@@ -1,16 +1,33 @@
 # Empathy Generation
-Code for the EmPO project. 
+Code for the EmPO project. The python scripts reference each other and are intended to be run from the project-root directory. This requires for it to be on the pythonpath:
+```bash
+export PYTHONPATH="."
+```
+The main environment requirements are in the *requirements.txt*:
+```bash
+pip install -r requirements.txt
+```
+As this project contains evaluation code from other projects, it may require installing additional packages, mentioned in the respective sections. All code is developed for *nix platforms.
+
+**HuggingFace login token**
+The baseline Zephyr model is covered by an open-source license which you need to agree to on the model's site. Your access token will then allow you to use it. As the trained models are in effect LoRA adapters for the base model you may be required to agree to the license first.
 
 ## Trained Models
+You can find the trained models on the HuggingFace Hub.
+
 baseline:
 https://huggingface.co/alignment-handbook/zephyr-7b-sft-full
+
 SFT:
 https://huggingface.co/justtherightsize/zephyr-7b-sft-full124
+
 DPO:
 https://huggingface.co/justtherightsize/zephyr-7b-sft-full124_d270
 
 ### Inference
-You can generate predictions using the *src.pipe_gen.py* script. See also the model cards in huggingface.
+The predictions for the entire test set of EmpatheticDialogues are saved as .csv (with sep=*~*) pandas dataframe in the **predictions** folder.
+
+You can generate predictions for the entire test set of using the *src.pipe_gen.py* script. See also the model cards in huggingface.
 ```bash
 # -a: PEFT LoRA adapter to be used atop the base model (default: alignment-handbook/zephyr-7b-sft-full)
 # -l: use local models or download from HF hub
@@ -30,7 +47,6 @@ python ./src/pipe_gen.py -a zephyr-7b-sft-full124 -l -p test1 -k <pth_to_key> -m
 **Generation pipeline:**
 See *src.pipe_gen.py* for details on reproducing the results on the EmpatheticDialogues dataset. A single example generation can be run using *src.reproduce_gen.py*. Note that you need to be logged in with a HuggingFace account and agree to the license of the base model (https://huggingface.co/alignment-handbook/zephyr-7b-sft-full)
 ```bash
-export PYTHONPATH="."
 python ./src/reproduce_gen.py
 ```
 Or you can run this code to generate responses using the trained adapters (SFT or DPO - uncomment the adapter id you want to try):
@@ -104,18 +120,20 @@ print(out)
 ## Training
 The training pipeline involves wandb.ai hyperparameter sweeps. You have to have the wandb package installed and be logged in to train. 
 
-The training starts en *src.pipe_arun.py*, which load the configuration from the *src.configs/* folder, such as dpo27.json. Then the script runs *src.pipe_sft.py* to train either SFT or DPO depending on the config file parameters.
+The training starts en *src.pipe_arun.py*, which load the configuration from the *src.configs/* folder, such as *dpo27.json* (for the DPO model: ..._124_d270) which contanis the **hyperparameters** used to train it. The script then runs *src.pipe_sft.py* to train either SFT or DPO depending on the config file parameters.
 ```bash
 # -sa: config name
 # -ss: number of tries in a sweep 
-python ./src/pipe_arun.py -sa dpo32 -ss 4
+python ./src/pipe_arun.py -sa dpo27 -ss 1
 ```
 
-## Evaluation: Reproducing results
+## Evaluation: Reproducing Results
 The script *src.pipe_gen.py* generates a pandas dataframe with the predictions for the entire test set (seel also section *Inference*). Empathy metrics can be measured on these predictions (saved as .csv with sep=*~*) or their subset. The predictions are also prepared in the **predictions** folder. The exception are the Language Understanding benchmarks, which are run on the models themselves.
 
 ### diffEpitome and BERTscore
-Run *src.run_metrics_on_saved_df.py* on a csv dataframe (preds_...) with predictions.
+Follow the guide to install the EPITOME models which generate the predictions to calculate diff-Epitome from https://github.com/passing2961/EmpGPT-3 . Following the guide involves **downloading the Epitome model checkpoints** which should be put into the *src/checkpoints* directory.
+
+To generate the bertscore and diff-epitome scores, run *src.run_metrics_on_saved_df.py* on a csv dataframe (preds_...) with predictions:
 ```bash
 python ./src/run_metrics_on_saved_df.py -s -n preds_dlr1e6m1000_zephyr-7b-sft-full124_d270.txt -m bertscore epitome
 ```
@@ -145,7 +163,6 @@ lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full
 **running on file -f**
 - Results are saved in data/results/empathy_eval_results by default, with path "data/results/empathy_eval_results/[filename]_[metric].txt"
 ```bash
-export PYTHONPATH="."
 #vad metrics
 python src/emp_metrics/run_empathy_eval.py -f predictions/preds_dlr1e6m1000_zephyr-7b-sft-full124_d270_epi.txt -m vad 
 # specificity metrics
