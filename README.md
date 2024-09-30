@@ -4,14 +4,14 @@ Code for the EmPO project. The python scripts reference each other and are inten
 # run from the project-root directory
 export PYTHONPATH="."
 ```
-The Python environment requirements are in the *requirements.txt*:
+The Python environment requirements for training and evaluation are in the *requirements.txt*. For just running inference, **you do not need the full requirements**. See the code example in section Inference for which dependencies you actually need for inference. 
 ```bash
 pip install -r requirements.txt
 ```
 As this project contains evaluation code from other projects, it may require installing additional packages, mentioned in the respective sections. All code is developed for *nix platforms.
 
 **HuggingFace login token**
-The baseline Zephyr model is covered by an open-source license which you need to agree to on the model's site. Your access token will then allow you to use it. As the trained models are in effect LoRA adapters for the base model you may be required to agree to the license first.
+The baseline Zephyr model is covered by an open-source license which you need to agree to on the model's site (see section below for the link). Your access token will then allow you to use it. As the trained models are in effect LoRA adapters for the base model you may be required to agree to the license first.
 
 ## Trained Models
 You can find the trained models on the HuggingFace Hub.
@@ -28,7 +28,7 @@ https://huggingface.co/justtherightsize/zephyr-7b-sft-full124_d270
 ### Inference
 The predictions for the entire test set of EmpatheticDialogues are saved as .csv (with sep=*~*) pandas dataframe in the **predictions** folder.
 
-You can generate predictions for the entire test set of using the *src.pipe_gen.py* script or use the code below for individual predictions. See also the model cards in huggingface.
+You can generate predictions for the entire test set of using the *src.pipe_gen.py* script or use the code below for individual predictions. See also the model cards in huggingface. You need ~28 GB of VRAM to generate the predictions.
 ```bash
 # -a: PEFT LoRA adapter to be used atop the base model (default: alignment-handbook/zephyr-7b-sft-full)
 # -l: use local models or download from HF hub
@@ -119,9 +119,9 @@ print(out)
 ```
 
 ## Training
-The training pipeline involves wandb.ai hyperparameter sweeps. You have to have the wandb package installed and be logged in to train. 
+The training pipeline involves wandb.ai hyperparameter sweeps. You have to have the wandb package installed and be logged in to train.
 
-The training starts in *src.pipe_arun.py*, which loads the configuration from the *src.configs/* folder, such as *dpo27.json* (for the DPO model: ..._124_d270) which contanis the **hyperparameters** used to train it. The script then runs *src.pipe_sft.py* to train either SFT or DPO depending on the config file parameters.
+The training starts in *src.pipe_arun.py*, which loads the configuration from the *src.configs/* folder, such as *dpo27.json* (for the DPO model: ..._124_d270) which contanis the **hyperparameters** used to train it. The script then runs *src.pipe_sft.py* to train either SFT or DPO depending on the config file parameters. The batch sizes are set for 2x A100 80GB cards where it takes ~120 GB of VRAM. For training with lower memory utilize gradient accumulation, which is implemented so just increase the value in confing from 1 to a multiple of 2.  
 ```bash
 # -sa: config name
 # -ss: number of tries in a grid-search sweep 
