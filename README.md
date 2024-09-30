@@ -1,9 +1,10 @@
 # Empathy Generation
 Code for the EmPO project. The python scripts reference each other and are intended to be run from the project-root directory. This requires for it to be on the pythonpath:
 ```bash
+# run from the project-root directory
 export PYTHONPATH="."
 ```
-The main environment requirements are in the *requirements.txt*:
+The Python environment requirements are in the *requirements.txt*:
 ```bash
 pip install -r requirements.txt
 ```
@@ -27,7 +28,7 @@ https://huggingface.co/justtherightsize/zephyr-7b-sft-full124_d270
 ### Inference
 The predictions for the entire test set of EmpatheticDialogues are saved as .csv (with sep=*~*) pandas dataframe in the **predictions** folder.
 
-You can generate predictions for the entire test set of using the *src.pipe_gen.py* script. See also the model cards in huggingface.
+You can generate predictions for the entire test set of using the *src.pipe_gen.py* script or use the code below for individual predictions. See also the model cards in huggingface.
 ```bash
 # -a: PEFT LoRA adapter to be used atop the base model (default: alignment-handbook/zephyr-7b-sft-full)
 # -l: use local models or download from HF hub
@@ -120,10 +121,10 @@ print(out)
 ## Training
 The training pipeline involves wandb.ai hyperparameter sweeps. You have to have the wandb package installed and be logged in to train. 
 
-The training starts en *src.pipe_arun.py*, which load the configuration from the *src.configs/* folder, such as *dpo27.json* (for the DPO model: ..._124_d270) which contanis the **hyperparameters** used to train it. The script then runs *src.pipe_sft.py* to train either SFT or DPO depending on the config file parameters.
+The training starts in *src.pipe_arun.py*, which loads the configuration from the *src.configs/* folder, such as *dpo27.json* (for the DPO model: ..._124_d270) which contanis the **hyperparameters** used to train it. The script then runs *src.pipe_sft.py* to train either SFT or DPO depending on the config file parameters.
 ```bash
 # -sa: config name
-# -ss: number of tries in a sweep 
+# -ss: number of tries in a grid-search sweep 
 python ./src/pipe_arun.py -sa dpo27 -ss 1
 ```
 
