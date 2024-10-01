@@ -160,14 +160,18 @@ lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full
 lm_eval --model hf --model_args pretrained=alignment-handbook/zephyr-7b-sft-full,dtype=bfloat16,use_flash_attention_2=True,trust_remote_code=True,peft=justtherightsize/zephyr-7b-sft-full124_d270,tokenizer=justtherightsize/zephyr-7b-sft-full124_d270 --tasks=leaderboard --batch_size=auto ---num_fewshot 5 -output_path=leader_zephyr-7b-sft-full124_d270.txt
 ```
 
-### Lee's empathy metrics
+### Feature-based emotional valence, and specificity  metrics
+The code is from https://github.com/MichiganNLP/empathy_eval . The metrics can be run either from the original repo or from the copies in this repo. For the requirements, refer to the individual python files because not all of the repo's requirements are needed.
+
 **running on file -f**
 - Results are saved in data/results/empathy_eval_results by default, with path "data/results/empathy_eval_results/[filename]_[metric].txt"
 ```bash
 #vad metrics
-python src/emp_metrics/run_empathy_eval.py -f predictions/preds_dlr1e6m1000_zephyr-7b-sft-full124_d270_epi.txt -m vad 
+python src/run_empathy_eval.py -f predictions/preds_dlr1e6m1000_zephyr-7b-sft-full124_d270_epi.txt -m vad 
 # specificity metrics
-python src/emp_metrics/run_empathy_eval.py -f predictions/preds_dlr1e6m1000_zephyr-7b-sft-full124_d270_epi.txt-m nidf
+python src/run_empathy_eval.py -f predictions/preds_dlr1e6m1000_zephyr-7b-sft-full124_d270_epi.txt -m nidf
+# diversity metrics
+python src/run_empathy_eval.py -f predictions/preds_dlr1e6m1000_zephyr-7b-sft-full124_d270_epi.txt -m diversity
 ```
 
 **running on human data**
